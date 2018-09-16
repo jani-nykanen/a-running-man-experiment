@@ -19,8 +19,14 @@ Game.prototype = Object.create(Scene.prototype);
 // Update function
 Game.prototype.update = function(tm) {
 
-    // ...
+    // Update wave
     this.wave += 0.05 * tm;
+
+    // A key pressed
+    if(this.input.getKey(65) == State.Pressed) {
+
+        console.log("Beep!");
+    }
 }
 
 

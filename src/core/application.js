@@ -24,6 +24,7 @@ var Application = function() {
 
     // Create components
     this.graphics = new Graphics(CANVAS_NAME);
+    this.input = new InputManager();
     
     // Center the canvas
     this.graphics.centerCanvas(window.innerWidth, window.innerHeight);
@@ -126,7 +127,7 @@ Application.prototype.loop = function(ts) {
         // Update keyboard (we do this only once!)
         if(updateCount == 0) {
 
-            // ...
+            this.input.update();
         }
 
         if(++ updateCount >= MAX_UPDATES) {
