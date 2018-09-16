@@ -67,7 +67,10 @@ Application.prototype.resize = function() {
 
 
 // Initialize
-Application.prototype.init = function(assetInfo) {
+Application.prototype.init = function(assetInfo, buttonList) {
+
+    // Create virtual gamepad
+    this.vpad = new Vpad(buttonList, this.input);
 
     // Load assets
     this.assets = new AssetPack(assetInfo.bitmaps, assetInfo.bitmapPath);
@@ -127,7 +130,8 @@ Application.prototype.loop = function(ts) {
         // Update keyboard (we do this only once!)
         if(updateCount == 0) {
 
-            this.input.update();
+            this.vpad.update();
+            this.input.update(); 
         }
 
         if(++ updateCount >= MAX_UPDATES) {
@@ -175,13 +179,13 @@ Application.prototype.loop = function(ts) {
 
 
 // Run the application
-Application.prototype.run = function(assetInfo, sceneFunc) {
+Application.prototype.run = function(assetInfo, sceneFunc, buttonList) {
 
     // Set reference to this object
     appRef = this;
 
     // Initialize
-    this.init(assetInfo);
+    this.init(assetInfo, buttonList);
 
     // Add scenes (assuming the passed
     // sceneFunc really does that)

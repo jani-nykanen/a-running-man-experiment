@@ -15,5 +15,5 @@ var Scene = function(arg) {
 
     // Get application content
     this.assets = app.assets;
-    this.input = app.input;
+    this.vpad = app.vpad;
 }

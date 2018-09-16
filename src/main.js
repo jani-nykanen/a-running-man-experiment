@@ -16,6 +16,15 @@ let assetInfo = {
     }
 };
 
+// Buttons
+let buttonList = {
+
+    fire1: 90,
+    fire2: 88,
+    confirm: 13,
+    cancel: 27,
+};
+
 
 // Main
 function main() {
@@ -26,5 +35,6 @@ function main() {
 
             app.addScene(new Game(app), false, true);
             app.addScene(new Global(app), true);
-        });
+        },
+        buttonList);
 }
