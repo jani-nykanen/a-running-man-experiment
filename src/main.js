@@ -12,7 +12,10 @@ let assetInfo = {
     bitmapPath : "assets/bitmaps/",
     bitmaps: {
 
-        font: "font.png"
+        font: "font.png",
+        forest: "forest.png",
+        sky: "sky.png",
+        mountains: "mountains.png",
     }
 };
 

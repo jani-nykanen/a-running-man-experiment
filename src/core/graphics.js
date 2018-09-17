@@ -36,6 +36,9 @@ var Graphics = function (canvasName) {
 
     // Global color
     this.globalColor = getColorString(255, 255, 255);
+
+    // Transformations
+    this.transf = new Transformation();
 }
 
 
