@@ -10,8 +10,14 @@ var Game = function (app) {
 
     Scene.call(this, [app, "game"]);
 
+    const INITIAL_GLOBAL_SPEED = 0.05;
+    
     // Create components
     this.bg = new Background();
+    this.road = new Road();
+
+    // Global speed
+    this.globalSpeed = INITIAL_GLOBAL_SPEED;
 }
 Game.prototype = Object.create(Scene.prototype);
 
@@ -20,15 +26,24 @@ Game.prototype = Object.create(Scene.prototype);
 Game.prototype.update = function (tm) {
 
     // Update background
-    this.bg.update(tm);
+    this.bg.update(this.globalSpeed, tm);
+
+    // Update road
+    this.road.update(this.globalSpeed, tm);
 }
 
 
 // Rendering function
 Game.prototype.draw = function (g) {
 
-    g.clearScreen(170, 170, 170);
+    const Y_TRANSLATION = 0.75;
+
+    // Set translation
+    g.setTranslation(0, Y_TRANSLATION, 0);
 
     // Draw background
     this.bg.draw(g, this.assets);
+
+    // Draw road
+    this.road.draw(g);
 }

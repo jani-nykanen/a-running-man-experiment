@@ -10,15 +10,12 @@ var Background = function () {
 
     const END_Z = 8.0;
     const STEP_COUNT = 8;
-    const Y_POS = 0.75;
 
     // Cloud position
     this.cloudPos = 0.0;
 
     // Floor position
     this.floorPos = 0.0;
-    // Floor y position
-    this.floorY = Y_POS;
     // End z
     this.floorEnd = END_Z;
 
@@ -50,8 +47,8 @@ Background.prototype.drawFloor = function (g) {
             continue;
         }
 
-        p = g.project(0.0, this.floorY, z - this.floorPos);
-        q = g.project(0.0, this.floorY, z - this.floorPos + this.floorStep);
+        p = g.project(0.0, 0, z - this.floorPos);
+        q = g.project(0.0, 0, z - this.floorPos + this.floorStep);
         z += this.floorStep;
         if(p == null || q == null) continue;
 
@@ -60,7 +57,7 @@ Background.prototype.drawFloor = function (g) {
     }
 
     // Draw temp road
-    this.drawRoad(g);
+    // this.drawRoad(g);
 }
 
 
@@ -70,18 +67,18 @@ Background.prototype.drawRoad = function(g) {
     const ROAD_WIDTH = 0.5;
     const NEAR = 1.0;
 
-    let p1 = g.project(-ROAD_WIDTH, this.floorY, this.floorEnd);
-    let p2 = g.project(-ROAD_WIDTH, this.floorY, NEAR);
+    let p1 = g.project(-ROAD_WIDTH, 0, this.floorEnd);
+    let p2 = g.project(-ROAD_WIDTH, 0, NEAR);
 
-    let q1 = g.project(ROAD_WIDTH, this.floorY, this.floorEnd);
-    let q2 = g.project(ROAD_WIDTH, this.floorY, NEAR);
+    let q1 = g.project(ROAD_WIDTH, 0, this.floorEnd);
+    let q2 = g.project(ROAD_WIDTH, 0, NEAR);
 
     // Set "gradient"
     g.setFloorRectGradient(72, 72+32, 85, 85, 85, 170, 170, 170);
 
     // Concrete
     g.setGlobalColor(170, 170, 170);
-    g.drawFloorRect(-ROAD_WIDTH, this.floorY, NEAR, 
+    g.drawFloorRect(-ROAD_WIDTH, -ROAD_WIDTH, 0, NEAR, 
         ROAD_WIDTH*2, this.floorEnd - NEAR);
 
     // Outlines
@@ -92,10 +89,9 @@ Background.prototype.drawRoad = function(g) {
 
 
 // Update
-Background.prototype.update = function (tm) {
+Background.prototype.update = function (globalSpeed, tm) {
 
     const CLOUD_SPEED = 0.1;
-    const FLOOR_SPEED = 0.05; // TEMP
 
     // Update clouds
     this.cloudPos -= CLOUD_SPEED * tm;
@@ -105,7 +101,7 @@ Background.prototype.update = function (tm) {
     }
 
     // Update floor position
-    this.floorPos += FLOOR_SPEED * tm;
+    this.floorPos += globalSpeed * tm;
     if(this.floorPos >= this.floorStep) {
 
         this.floorPos -= this.floorStep;

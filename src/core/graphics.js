@@ -265,16 +265,16 @@ Graphics.prototype.project = function (x, y, z) {
 
 
 // Draw a floor rectangle
-Graphics.prototype.drawFloorRect = function (x, y, z, width, depth) {
+Graphics.prototype.drawFloorRect = function (x1, x2, y, z, width, depth) {
 
     const DELTA = 0.5;
     if (depth < DELTA) return;
 
     // Get corner points
-    let p1 = this.project(x, y, z);
-    let p2 = this.project(x, y, z + depth);
-    let q1 = this.project(x + width, y, z);
-    let q2 = this.project(x + width, y, z + depth);
+    let p1 = this.project(x1, y, z);
+    let p2 = this.project(x2, y, z + depth);
+    let q1 = this.project(x1 + width, y, z);
+    let q2 = this.project(x2 + width, y, z + depth);
 
     if (p1 == null || p2 == null || q1 == null || q2 == null)
         return;
@@ -310,4 +310,20 @@ Graphics.prototype.setFloorRectGradient = function (begin, end,
 
     this.gradient.col1 = { r: r1, g: g1, b: b1 };
     this.gradient.col2 = { r: r2, g: g2, b: b2 };
+}
+
+
+// Set translation
+Graphics.prototype.setTranslation = function(x, y, z) {
+
+    if(x == null) {
+
+        x = 0;
+        y = 0;
+        z = 0;
+    }
+
+    this.transf.tr.x = x;
+    this.transf.tr.y = y;
+    this.transf.tr.z = z;
 }
