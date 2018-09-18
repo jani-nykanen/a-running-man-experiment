@@ -76,6 +76,9 @@ Background.prototype.drawRoad = function(g) {
     let q1 = g.project(ROAD_WIDTH, this.floorY, this.floorEnd);
     let q2 = g.project(ROAD_WIDTH, this.floorY, NEAR);
 
+    // Set "gradient"
+    g.setFloorRectGradient(72, 72+32, 85, 85, 85, 170, 170, 170);
+
     // Concrete
     g.setGlobalColor(170, 170, 170);
     g.drawFloorRect(-ROAD_WIDTH, this.floorY, NEAR, 

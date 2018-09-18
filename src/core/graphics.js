@@ -46,6 +46,35 @@ var Graphics = function (canvasName) {
     // Set near/far
     this.near = NEAR;
     this.far = FAR;
+
+    // Rectangle floor gradient
+    this.gradient = {
+        begin: 0, end: 0,
+        enabled: false,
+        col1: { r: 0, g: 0, b: 0 },
+        col2: { r: 0, g: 0, b: 0 }
+    };
+}
+
+
+// Set gradient color value
+Graphics.prototype.setGradientColorValue = function(y) {
+
+    let g = this.gradient;
+
+    if(y <= g.begin) this.setGlobalColor(g.col1.r, g.col1.g, g.col1.b);
+    else if(y >= g.end) this.setGlobalColor(g.col2.r, g.col2.g, g.col2.b);
+    else {
+
+        // Check "position"
+        let t = (y-g.begin) / (g.end-g.begin);
+
+        this.setGlobalColor(
+            g.col1.r*(1-t) + g.col2.r*t,
+            g.col1.g*(1-t) + g.col2.g*t,
+            g.col1.b*(1-t) + g.col2.b*t
+        )
+    }
 }
 
 
@@ -193,52 +222,53 @@ Graphics.prototype.setGlobalColor = function (r, g, b, a) {
 Graphics.prototype.fillRect = function (x, y, w, h) {
 
     let c = this.ctx;
-    c.fillRect(x | 0, y | 0, w | 0, h  | 0);
+    c.fillRect(x | 0, y | 0, w | 0, h | 0);
 }
 
 
 // Draw a line
-Graphics.prototype.drawLine = function(x1,y1,x2,y2) {
+Graphics.prototype.drawLine = function (x1, y1, x2, y2) {
 
     x1 = x1 | 0;
     x2 = x2 | 0;
     y1 = y1 | 0;
     y2 = y2 | 0;
 
-    let dx = Math.abs(x2-x1) | 0;
-    let sx = x1<x2 ? 1 : -1;
-    let dy = Math.abs(y2-y1) | 0;
-    let sy = y1<y2 ? 1 : -1; 
-    let err = (dx>dy ? dx : -dy)/2, e2;
-     
-    while(true) {
+    let dx = Math.abs(x2 - x1) | 0;
+    let sx = x1 < x2 ? 1 : -1;
+    let dy = Math.abs(y2 - y1) | 0;
+    let sy = y1 < y2 ? 1 : -1;
+    let err = (dx > dy ? dx : -dy) / 2, e2;
 
-        if(!(y1 >= this.canvas.width-1 || y1 < 0 ||
-            x1 >= this.canvas.height-1 || x1 < 0 )) {
+    while (true) {
 
-            this.fillRect(x1,y1,1,1);
+        if (!(y1 >= this.canvas.width - 1 || y1 < 0 ||
+            x1 >= this.canvas.height - 1 || x1 < 0)) {
+
+            this.fillRect(x1, y1, 1, 1);
         }
-            
-        if (x1==x2 && y1==y2) break;
+
+        if (x1 == x2 && y1 == y2) break;
         e2 = err;
-        if (e2 >-dx) { err -= dy; x1 += sx; }
+        if (e2 > -dx) { err -= dy; x1 += sx; }
         if (e2 < dy) { err += dx; y1 += sy; }
     }
 }
 
 
 // Project a point to the screen
-Graphics.prototype.project = function(x, y, z) {
+Graphics.prototype.project = function (x, y, z) {
 
-    return this.transf.project(x, y, z, this.near, this.far, 
+    return this.transf.project(x, y, z, this.near, this.far,
         this.canvas.width, this.canvas.height);
 }
 
 
 // Draw a floor rectangle
-Graphics.prototype.drawFloorRect = function(x, y, z, width, depth) {
+Graphics.prototype.drawFloorRect = function (x, y, z, width, depth) {
 
-    const DELTA = 0.01;
+    const DELTA = 0.5;
+    if (depth < DELTA) return;
 
     // Get corner points
     let p1 = this.project(x, y, z);
@@ -246,20 +276,38 @@ Graphics.prototype.drawFloorRect = function(x, y, z, width, depth) {
     let q1 = this.project(x + width, y, z);
     let q2 = this.project(x + width, y, z + depth);
 
-    if(p1 == null || p2 == null || q1 == null || q2 == null)
+    if (p1 == null || p2 == null || q1 == null || q2 == null)
         return;
 
     let k1 = (p2.x - p1.x) / (p2.y - p1.y);
-    let k2 = (q2.x - q1.x) / (q2.y - q1.y) ;
+    let k2 = (q2.x - q1.x) / (q2.y - q1.y);
 
     let sx = p2.x;
     let ex = q2.x;
 
-    for(let i = p2.y; i <= Math.min(this.canvas.height, p1.y); ++ i) {
+    for (let i = p2.y; i <= Math.min(this.canvas.height, p1.y); ++i) {
 
-        this.fillRect(sx, i, ex-sx +1, 1);
+        if(this.gradient.enabled)
+            this.setGradientColorValue(i);
+
+        this.fillRect(sx, i, ex - sx + 1, 1);
 
         sx += k1;
         ex += k2;
     }
+}
+
+
+// Set floor rectangle gradient
+Graphics.prototype.setFloorRectGradient = function (begin, end,
+    r1, g1, b1, r2, g2, b2) {
+
+    this.gradient.enabled = begin != null && begin != false;
+    if (begin == null || begin == false) return;
+
+    this.gradient.begin = begin;
+    this.gradient.end = end;
+
+    this.gradient.col1 = { r: r1, g: g1, b: b1 };
+    this.gradient.col2 = { r: r2, g: g2, b: b2 };
 }
