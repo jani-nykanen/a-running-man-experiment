@@ -265,7 +265,7 @@ Graphics.prototype.project = function (x, y, z) {
 
 
 // Draw a floor rectangle
-Graphics.prototype.drawFloorRect = function (x1, x2, y, z, width, depth) {
+Graphics.prototype.drawFloorRect = function (x1, x2, y, z, width, depth, outlines) {
 
     const DELTA = 0.5;
     if (depth < DELTA) return;
@@ -294,6 +294,14 @@ Graphics.prototype.drawFloorRect = function (x1, x2, y, z, width, depth) {
 
         sx += k1;
         ex += k2;
+    }
+
+    // Draw side outlines
+    if(outlines) {
+
+        this.setGlobalColor(0, 0, 0);
+        this.drawLine(p1.x, p1.y, p2.x, p2.y);
+        this.drawLine(q1.x, q1.y, q2.x, q2.y);
     }
 }
 

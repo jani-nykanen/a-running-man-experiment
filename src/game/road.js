@@ -53,7 +53,8 @@ RoadPiece.prototype.draw = function (g) {
 
     g.drawFloorRect(this.startX - this.width / 2, this.endX - this.width / 2,
         0, this.z,
-        this.width, this.depth);
+        this.width, this.depth,
+        true);
 }
 
 
@@ -81,6 +82,12 @@ var Road = function () {
     this.timerMax = ROAD_STEP;
     // Start pos
     this.startPos = START_POS;
+    // Creation positions
+    this.oldX = 0.0;
+    this.creationX = 0.0;
+
+    // TEMP timer
+    this.tempTimer = 0.0;
 
 }
 
@@ -100,15 +107,22 @@ Road.prototype.getNextRoadPieceIndex = function () {
 // Update
 Road.prototype.update = function (globalSpeed, tm) {
 
+    // Update temp timer
+    this.tempTimer += 0.05 * tm;
+
     // Update timer
     this.creationTimer += globalSpeed * tm;
     if (this.creationTimer >= this.timerMax) {
 
+        this.creationX = Math.sin(this.tempTimer) * 0.5;
+
         // Create a road piece
         let i = this.getNextRoadPieceIndex();
-        this.pieces[i].createSelf(0, 0, this.startPos);
+        this.pieces[i].createSelf(this.oldX, this.creationX, this.startPos);
 
         this.creationTimer -= this.timerMax;
+
+        this.oldX = this.creationX;
     }
 
     // Update road pieces
@@ -123,7 +137,9 @@ Road.prototype.update = function (globalSpeed, tm) {
 Road.prototype.draw = function (g) {
 
     // Set "gradient"
-    g.setFloorRectGradient(72, 72+32, 85, 85, 85, 170, 170, 170);
+    g.setFloorRectGradient(72, 72+32, 
+        85, 48, 0, 
+        192, 144, 64);
 
     // Draw road pieces
     for (let i = 0; i < this.pieces.length; ++i) {
