@@ -30,6 +30,9 @@ let getColorString = function (r, g, b, a) {
 // Constructor
 var Graphics = function (canvasName) {
 
+    const NEAR = 0.05;
+    const FAR = 100.0;
+
     // Get canvas & context
     this.canvas = document.getElementById(canvasName);
     this.ctx = this.canvas.getContext("2d");
@@ -39,6 +42,10 @@ var Graphics = function (canvasName) {
 
     // Transformations
     this.transf = new Transformation();
+
+    // Set near/far
+    this.near = NEAR;
+    this.far = FAR;
 }
 
 
@@ -187,4 +194,72 @@ Graphics.prototype.fillRect = function (x, y, w, h) {
 
     let c = this.ctx;
     c.fillRect(x | 0, y | 0, w | 0, h  | 0);
+}
+
+
+// Draw a line
+Graphics.prototype.drawLine = function(x1,y1,x2,y2) {
+
+    x1 = x1 | 0;
+    x2 = x2 | 0;
+    y1 = y1 | 0;
+    y2 = y2 | 0;
+
+    let dx = Math.abs(x2-x1) | 0;
+    let sx = x1<x2 ? 1 : -1;
+    let dy = Math.abs(y2-y1) | 0;
+    let sy = y1<y2 ? 1 : -1; 
+    let err = (dx>dy ? dx : -dy)/2, e2;
+     
+    while(true) {
+
+        if(!(y1 >= this.canvas.width-1 || y1 < 0 ||
+            x1 >= this.canvas.height-1 || x1 < 0 )) {
+
+            this.fillRect(x1,y1,1,1);
+        }
+            
+        if (x1==x2 && y1==y2) break;
+        e2 = err;
+        if (e2 >-dx) { err -= dy; x1 += sx; }
+        if (e2 < dy) { err += dx; y1 += sy; }
+    }
+}
+
+
+// Project a point to the screen
+Graphics.prototype.project = function(x, y, z) {
+
+    return this.transf.project(x, y, z, this.near, this.far, 
+        this.canvas.width, this.canvas.height);
+}
+
+
+// Draw a floor rectangle
+Graphics.prototype.drawFloorRect = function(x, y, z, width, depth) {
+
+    const DELTA = 0.01;
+
+    // Get corner points
+    let p1 = this.project(x, y, z);
+    let p2 = this.project(x, y, z + depth);
+    let q1 = this.project(x + width, y, z);
+    let q2 = this.project(x + width, y, z + depth);
+
+    if(p1 == null || p2 == null || q1 == null || q2 == null)
+        return;
+
+    let k1 = (p2.x - p1.x) / (p2.y - p1.y);
+    let k2 = (q2.x - q1.x) / (q2.y - q1.y) ;
+
+    let sx = p2.x;
+    let ex = q2.x;
+
+    for(let i = p2.y; i <= Math.min(this.canvas.height, p1.y); ++ i) {
+
+        this.fillRect(sx, i, ex-sx +1, 1);
+
+        sx += k1;
+        ex += k2;
+    }
 }

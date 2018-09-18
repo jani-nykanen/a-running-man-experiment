@@ -16,6 +16,7 @@ let assetInfo = {
         forest: "forest.png",
         sky: "sky.png",
         mountains: "mountains.png",
+        clouds: "clouds.png",
     }
 };
 

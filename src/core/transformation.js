@@ -11,12 +11,12 @@ var Transformation = function (fovFactor) {
     const DEFAULT_FOV_FACTOR = 0.75;
 
     // "FOV" factor
-    this.fovFactor = fovFactor | DEFAULT_FOV_FACTOR;
+    this.fovFactor = fovFactor == null ? DEFAULT_FOV_FACTOR : fovFactor;
     // Translation
     this.tr = {
         x: 0,
         y: 0,
-        z: 0
+        z: 0,
     };
 }
 
@@ -24,9 +24,9 @@ var Transformation = function (fovFactor) {
 // Transform a point
 Transformation.prototype.transform = function (x, y, z) {
 
-    x += tr.x;
-    y += tr.y;
-    z += tr.z;
+    x += this.tr.x;
+    y += this.tr.y;
+    z += this.tr.z;
 
     z *= this.fovFactor;
 
@@ -38,10 +38,10 @@ Transformation.prototype.transform = function (x, y, z) {
 Transformation.prototype.project = function(x, y, z, near, far, w, h) {
 
     // Transform
-    let p = transform(x, y, z);
-
+    let p = this.transform(x, y, z);
+    
     // Check if not too far
-    if(p.z >= far) return;
+    if(p.z >= far) return null;
 
     // Check if not too near
     if(p.z <= 0.0) return null;
@@ -61,5 +61,5 @@ Transformation.prototype.project = function(x, y, z, near, far, w, h) {
     p.x *= w;
     p.y *= h;
 
-    return p;
+    return {x: p.x, y: p.y};
 }
