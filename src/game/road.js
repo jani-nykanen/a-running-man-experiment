@@ -94,8 +94,16 @@ var Road = function () {
     this.oldX = 0.0;
     this.creationX = 0.0;
 
-    // TEMP timer
-    this.tempTimer = 0.0;
+    // Curvature delta speed
+    this.curvDelta = 0.0;
+    // Curvature
+    this.curvature = 0.0;
+    // Curvature target
+    this.curvTarget = 0.0;
+    // Curvature time step
+    this.curvStep = 0.0;
+    // Curvature change time
+    this.curvTimer = 0.0;
 
 }
 
@@ -124,12 +132,62 @@ Road.prototype.createNewRoadPiece = function(x, z) {
     this.oldX = this.creationX;
 }
 
+// Update curvature
+Road.prototype.updateCurvature = function(speed, tm) {
+
+    const CURV_LIMIT = Math.PI / 1.5;
+
+    speed = Math.abs(speed) / 0.060;
+
+    // Update curvature
+    if(this.curvDelta < this.curvTarget) {
+
+        this.curvDelta += this.curvStep * speed * tm;
+        if(this.curvDelta > this.curvTarget) {
+
+            this.curvDelta = this.curvTarget;
+        }
+    }
+    else if(this.curvDelta > this.curvTarget) {
+
+        this.curvDelta -= this.curvStep * speed * tm;
+        if(this.curvDelta < this.curvTarget) {
+
+            this.curvDelta = this.curvTarget;
+        }
+    }
+    this.curvature += this.curvDelta * speed * tm;
+
+    // Limit curvature
+    if(this.curvature > CURV_LIMIT)
+        this.curvature = CURV_LIMIT;
+
+    else if(this.curvature < -CURV_LIMIT)
+        this.CURV_LIMIT = -CURV_LIMIT;
+
+    // Update curvature timer
+    this.curvTimer -= speed * tm;
+    if(this.curvTimer <= 0.0) {
+
+        const CURVE_MIN = 60;
+        const CURVE_MAX = 240;
+
+        this.curvDelta = 0.0;
+        this.curvTimer = Math.random() * 120 + 60;
+        this.curvTarget = (Math.random() * 2 - 1.0) * 0.025 * (1.0 + 4*this.curvTimer / (CURVE_MIN+CURVE_MAX));
+        this.curvStep = Math.abs(this.curvTarget) / this.curvTimer;
+    }
+}
+
 
 // Update
 Road.prototype.update = function (globalSpeed, tm) {
 
     // Update timer
     this.creationTimer += globalSpeed * tm;
+
+    // Update curvature
+    this.updateCurvature(globalSpeed, tm);
 
     // Update road pieces
     for (let i = 0; i < this.pieces.length; ++i) {
@@ -138,7 +196,7 @@ Road.prototype.update = function (globalSpeed, tm) {
 
             // Create a new road piece
             this.createNewRoadPiece(
-                Math.sin(this.creationTimer/2)*2.0, 
+                Math.sin(this.curvature)*2.5, 
                 this.pieces[i].z);
         }
     }

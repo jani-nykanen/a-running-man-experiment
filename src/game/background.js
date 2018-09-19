@@ -98,6 +98,8 @@ Background.prototype.draw = function (g, assets) {
 Background.prototype.postDraw = function(g, assets) {
 
     const Y_OFF = 15;
+    const MOUNTAIN_DIST = 0.75;
+    const FOREST_DIST = 0.25;
 
     let a = assets;
 
@@ -114,8 +116,8 @@ Background.prototype.postDraw = function(g, assets) {
     }
 
     // Calculate mountain & forest positions
-    let mountainX = tx / 0.5;
-    let forestX = tx / 0.25;
+    let mountainX = tx / MOUNTAIN_DIST;
+    let forestX = tx / FOREST_DIST;
 
     // Mountains
     for(let i = -1; i <= 1; ++ i) {
