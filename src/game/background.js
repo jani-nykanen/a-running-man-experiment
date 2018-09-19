@@ -56,35 +56,6 @@ Background.prototype.drawFloor = function (g) {
         
     }
 
-    // Draw temp road
-    // this.drawRoad(g);
-}
-
-
-// Draw a (temporary) road
-Background.prototype.drawRoad = function(g) {
-
-    const ROAD_WIDTH = 0.5;
-    const NEAR = 1.0;
-
-    let p1 = g.project(-ROAD_WIDTH, 0, this.floorEnd);
-    let p2 = g.project(-ROAD_WIDTH, 0, NEAR);
-
-    let q1 = g.project(ROAD_WIDTH, 0, this.floorEnd);
-    let q2 = g.project(ROAD_WIDTH, 0, NEAR);
-
-    // Set "gradient"
-    g.setFloorRectGradient(72, 72+32, 85, 85, 85, 170, 170, 170);
-
-    // Concrete
-    g.setGlobalColor(170, 170, 170);
-    g.drawFloorRect(-ROAD_WIDTH, -ROAD_WIDTH, 0, NEAR, 
-        ROAD_WIDTH*2, this.floorEnd - NEAR);
-
-    // Outlines
-    g.setGlobalColor(0, 0, 0);
-    g.drawLine(p1.x, p1.y, p2.x, p2.y);
-    g.drawLine(q1.x, q1.y, q2.x, q2.y);
 }
 
 
@@ -118,6 +89,21 @@ Background.prototype.draw = function (g, assets) {
     // Background color
     g.clearScreen(128, 255, 128);
 
+    // "Floor"
+    this.drawFloor(g);
+}
+
+
+// "Post" draw
+Background.prototype.postDraw = function(g, assets) {
+
+    const Y_OFF = 15;
+
+    let a = assets;
+
+    // Get camera X translation
+    let tx = g.transf.tr.x;
+
     // Sky
     g.drawBitmap(a.bitmaps.sky, 0, 0, 0);
 
@@ -127,13 +113,23 @@ Background.prototype.draw = function (g, assets) {
         g.drawBitmap(a.bitmaps.clouds, this.cloudPos + i * 128, 0, 0);
     }
 
+    // Calculate mountain & forest positions
+    let mountainX = tx / 0.5;
+    let forestX = tx / 0.25;
+
     // Mountains
-    g.drawBitmap(a.bitmaps.mountains, 0, 32, 0);
+    for(let i = -1; i <= 1; ++ i) {
+
+        g.drawBitmap(a.bitmaps.mountains, 
+            mountainX  + i*128, 
+            16 + Y_OFF, 0);
+    } 
 
     // Forest
-    g.drawBitmap(a.bitmaps.forest, 0, 56, 0);
-
-    // "Floor"
-    this.drawFloor(g);
-
+    for(let i = -1; i <= 1; ++ i) {
+    
+        g.drawBitmap(a.bitmaps.forest, 
+            forestX + i*128, 
+            40 + Y_OFF, 0);
+    }
 }

@@ -35,14 +35,17 @@ RoadPiece.prototype.createSelf = function (sx, ex, z) {
 // Update
 RoadPiece.prototype.update = function (globalSpeed, near, tm) {
 
-    if (!this.exist) return;
+    if (!this.exist) return false;
 
     // Move
     this.z -= globalSpeed * tm;
     if (this.z < near) {
 
         this.exist = false;
+        return true;
     }
+
+    return false;
 }
 
 
@@ -65,7 +68,7 @@ RoadPiece.prototype.draw = function (g) {
 var Road = function () {
 
     const ROAD_STEP = 0.5;
-    const ROAD_WIDTH = 1.0;
+    const ROAD_WIDTH = 1.5;
     const ROAD_COUNT = 32;
     const START_POS = 8.0;
 
@@ -109,28 +112,35 @@ Road.prototype.getNextRoadPieceIndex = function () {
 }
 
 
+// Create a new road piece
+Road.prototype.createNewRoadPiece = function(x, z) {
+
+    this.creationX = x;
+
+    // Create a road piece
+    let i = this.getNextRoadPieceIndex();
+    this.pieces[i].createSelf(this.oldX, this.creationX, z + this.startPos);
+
+    this.oldX = this.creationX;
+}
+
+
 // Update
 Road.prototype.update = function (globalSpeed, tm) {
 
     // Update timer
     this.creationTimer += globalSpeed * tm;
-    if (this.creationTimer >= this.timerMax) {
-
-        this.creationX = Math.sin(this.tempTimer) * 0.5;
-
-        // Create a road piece
-        let i = this.getNextRoadPieceIndex();
-        this.pieces[i].createSelf(this.oldX, this.creationX, this.startPos);
-
-        this.creationTimer -= this.timerMax;
-
-        this.oldX = this.creationX;
-    }
 
     // Update road pieces
     for (let i = 0; i < this.pieces.length; ++i) {
 
-        this.pieces[i].update(globalSpeed, 0.5, tm);
+        if(this.pieces[i].update(globalSpeed, 0.5, tm)) {
+
+            // Create a new road piece
+            this.createNewRoadPiece(
+                Math.sin(this.creationTimer/2)*2.0, 
+                this.pieces[i].z);
+        }
     }
 
     // Update temp timer
