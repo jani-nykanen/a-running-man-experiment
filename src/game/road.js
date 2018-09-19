@@ -71,13 +71,18 @@ var Road = function () {
 
     // Road pieces
     this.pieces = new Array(ROAD_COUNT);
+    // Create default road
     for (let i = 0; i < this.pieces.length; ++i) {
 
         this.pieces[i] = new RoadPiece(ROAD_WIDTH, ROAD_STEP);
+        if(i < START_POS / ROAD_STEP) {
+
+            this.pieces[i].createSelf(0, 0, i * ROAD_STEP);
+        }
     }
 
     // Creation timer
-    this.creationTimer = 0.0;
+    this.creationTimer = ROAD_STEP;
     // Timer max
     this.timerMax = ROAD_STEP;
     // Start pos
@@ -107,9 +112,6 @@ Road.prototype.getNextRoadPieceIndex = function () {
 // Update
 Road.prototype.update = function (globalSpeed, tm) {
 
-    // Update temp timer
-    this.tempTimer += 0.05 * tm;
-
     // Update timer
     this.creationTimer += globalSpeed * tm;
     if (this.creationTimer >= this.timerMax) {
@@ -130,6 +132,10 @@ Road.prototype.update = function (globalSpeed, tm) {
 
         this.pieces[i].update(globalSpeed, 0.5, tm);
     }
+
+    // Update temp timer
+    this.tempTimer += 0.05 * tm;
+
 }
 
 
