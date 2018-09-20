@@ -104,7 +104,6 @@ var Road = function () {
     this.curvStep = 0.0;
     // Curvature change time
     this.curvTimer = 0.0;
-
 }
 
 
@@ -123,7 +122,7 @@ Road.prototype.getNextRoadPieceIndex = function () {
 // Create a new road piece
 Road.prototype.createNewRoadPiece = function(x, z) {
 
-    this.creationX = x;
+    this.creationX = this.oldX + x;
 
     // Create a road piece
     let i = this.getNextRoadPieceIndex();
@@ -132,12 +131,20 @@ Road.prototype.createNewRoadPiece = function(x, z) {
     this.oldX = this.creationX;
 }
 
+
 // Update curvature
 Road.prototype.updateCurvature = function(speed, tm) {
 
-    const CURV_LIMIT = Math.PI / 1.5;
+    const CURV_LIMIT = 1.5;
+    const SPEED_MAX = 0.060;
 
-    speed = Math.abs(speed) / 0.060;
+    const CURVE_MIN = 10;
+    const CURVE_MAX = 190;
+
+    const TARGET_BASE = 0.05;
+    const TARGET_SPEED_FACTOR = 4.0;
+
+    speed = Math.abs(speed) / SPEED_MAX;
 
     // Update curvature
     if(this.curvDelta < this.curvTarget) {
@@ -159,22 +166,30 @@ Road.prototype.updateCurvature = function(speed, tm) {
     this.curvature += this.curvDelta * speed * tm;
 
     // Limit curvature
-    if(this.curvature > CURV_LIMIT)
-        this.curvature = CURV_LIMIT;
+    if(this.curvature > CURV_LIMIT) {
 
-    else if(this.curvature < -CURV_LIMIT)
-        this.CURV_LIMIT = -CURV_LIMIT;
+        this.curvTarget = -Math.abs(this.curvature-CURV_LIMIT);
+        this.curvDelta = 0.0;
+        this.curvature = CURV_LIMIT;
+    }
+
+    else if(this.curvature < -CURV_LIMIT) {
+
+        this.curvTarget = Math.abs(this.curvature- (-CURV_LIMIT) );
+        this.curvDelta = 0.0;
+        this.curvature = -CURV_LIMIT;
+    }
 
     // Update curvature timer
     this.curvTimer -= speed * tm;
     if(this.curvTimer <= 0.0) {
 
-        const CURVE_MIN = 60;
-        const CURVE_MAX = 240;
-
         this.curvDelta = 0.0;
-        this.curvTimer = Math.random() * 120 + 60;
-        this.curvTarget = (Math.random() * 2 - 1.0) * 0.025 * (1.0 + 4*this.curvTimer / (CURVE_MIN+CURVE_MAX));
+
+        this.curvTimer = Math.random() * CURVE_MAX + CURVE_MIN;
+        this.curvTarget = (Math.random() * 2 - 1.0) * TARGET_BASE 
+            * (1.0 + TARGET_SPEED_FACTOR*this.curvTimer / (CURVE_MIN+CURVE_MAX));
+        
         this.curvStep = Math.abs(this.curvTarget) / this.curvTimer;
     }
 }
@@ -182,6 +197,9 @@ Road.prototype.updateCurvature = function(speed, tm) {
 
 // Update
 Road.prototype.update = function (globalSpeed, tm) {
+
+    const CURVATURE_FACTOR = 0.2;
+    const NEAR = 0.5;
 
     // Update timer
     this.creationTimer += globalSpeed * tm;
@@ -192,17 +210,14 @@ Road.prototype.update = function (globalSpeed, tm) {
     // Update road pieces
     for (let i = 0; i < this.pieces.length; ++i) {
 
-        if(this.pieces[i].update(globalSpeed, 0.5, tm)) {
+        if(this.pieces[i].update(globalSpeed, NEAR, tm)) {
 
             // Create a new road piece
             this.createNewRoadPiece(
-                Math.sin(this.curvature)*2.5, 
+                this.curvature * CURVATURE_FACTOR, 
                 this.pieces[i].z);
         }
     }
-
-    // Update temp timer
-    this.tempTimer += 0.05 * tm;
 
 }
 

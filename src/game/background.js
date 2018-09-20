@@ -116,8 +116,8 @@ Background.prototype.postDraw = function(g, assets) {
     }
 
     // Calculate mountain & forest positions
-    let mountainX = tx / MOUNTAIN_DIST;
-    let forestX = tx / FOREST_DIST;
+    let mountainX = ( (tx / MOUNTAIN_DIST) | 0 ) % 128;
+    let forestX = ( (tx / FOREST_DIST) | 0 ) % 128;
 
     // Mountains
     for(let i = -1; i <= 1; ++ i) {
