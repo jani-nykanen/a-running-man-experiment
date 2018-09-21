@@ -20,6 +20,9 @@ var Player = function (z) {
 
     // Speed limits
     this.speedLimit = {x : LIMIT_X, z : LIMIT_Z};
+
+    // Can jump
+    this.canJump = false;
 }
 
 
@@ -53,10 +56,16 @@ Player.prototype.control = function (vpad, tm) {
     const BRAKE_FACTOR = 0.001;
     const DELTA = 0.05;
     const X_BONUS = 3.0;
+    const GRAVITY = 0.025;
+    const JUMP_HEIGHT = 0.05;
+    const JUMP_END_DIVIDER = 2;
 
-    // Horizontal
+    // Default
     this.target.x = 0.0;
     this.target.z = 0.0;
+    this.target.y = GRAVITY;
+
+    // Horizontal
     if (Math.abs(vpad.stick.x) > DELTA) {
 
         this.target.x = vpad.stick.x * this.speedLimit.x;
@@ -79,6 +88,19 @@ Player.prototype.control = function (vpad, tm) {
         } 
         this.target.z = 0.0;
     }
+
+    // Jump
+    let f1 = vpad.buttons.fire1;
+    let f2 = vpad.buttons.fire2;
+    if(this.canJump && 
+        (f1 == State.Pressed || f2 == State.Pressed) ) {
+
+        this.speed.y = -JUMP_HEIGHT;
+    } 
+    else if(this.speed.y < 0.0 && !this.canJump && (f1 == State.Released || f2 == State.Released) ) {
+
+        this.speed.y /= JUMP_END_DIVIDER;
+    }
 }
 
 
@@ -87,6 +109,7 @@ Player.prototype.move = function (tm) {
 
     const ACCELERATION_X = 0.0020;
     const ACCELERATION_Z = 0.0010;
+    const GRAVITY_ACC = 0.002;
     const SLOW_MODIF = 0.80;
 
     // Calculate Z acceleration
@@ -98,9 +121,21 @@ Player.prototype.move = function (tm) {
         this.speed.x, this.target.x, ACCELERATION_X, tm);
     this.speed.z = this.updateSpeed(
         this.speed.z, this.target.z, accl, tm);
+    this.speed.y = this.updateSpeed(
+        this.speed.y, this.target.y, GRAVITY_ACC, tm);  
 
     // Update position
     this.pos.x += this.speed.x * tm;
+    this.pos.y += this.speed.y * tm;
+
+    // Floor collision
+    this.canJump = false;
+    if(this.pos.y >= 0.0 && this.speed.y >= 0.0) {
+
+        this.pos.y = 0.0;
+        this.speed.y = 0.0;
+        this.canJump = true;
+    }
 }
 
 
@@ -123,9 +158,12 @@ Player.prototype.updateCamera = function(cam, tm) {
 // Update
 Player.prototype.update = function (vpad, camX, tm) {
 
+    // Control
     this.control(vpad, tm);
+    // Move
     this.move(tm);
 
+    // Update camera
     return this.updateCamera(camX, tm);
 }
 

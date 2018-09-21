@@ -24,7 +24,7 @@ let assetInfo = {
 let buttonList = {
 
     fire1: 90,
-    fire2: 88,
+    fire2: 32,
     confirm: 13,
     cancel: 27,
 };
