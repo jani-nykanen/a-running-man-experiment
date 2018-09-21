@@ -58,5 +58,5 @@ Game.prototype.draw = function (g) {
     this.bg.postDraw(g, this.assets);
 
     // Draw player
-    this.player.draw(g);
+    this.player.draw(g, this.assets);
 }

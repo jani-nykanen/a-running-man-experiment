@@ -17,6 +17,8 @@ let assetInfo = {
         sky: "sky.png",
         mountains: "mountains.png",
         clouds: "clouds.png",
+        player: "player.png",
+        shadow: "shadow.png",
     }
 };
 
