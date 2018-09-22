@@ -25,11 +25,16 @@ var Vpad = function (buttonList, input) {
     this.oldStick = { x: 0, y: 0 };
     // Stick delta
     this.delta = { x: 0, y: 0 };
+
+    // "Length"
+    this.len = 0;
 }
 
 
 // Update virtual game pad
 Vpad.prototype.update = function() {
+
+    const DELTA = 0.01;
 
     this.oldStick.x = this.stick.x;
     this.oldStick.y = this.stick.y;
@@ -59,11 +64,13 @@ Vpad.prototype.update = function() {
         this.stick.y = 1.0;
     }
 
-    // NOTE:
-    // We could restrict the stick state to
-    // the unit sphere S^1 := { (x,y) in R^2 | |(x,y)| = 1},
-    // but it's not useful in this project since we
-    // have no diagonal movement
+    // Calculate length & restrict to a unit sphere (plus 0)
+    this.len = Math.hypot(this.stick.x, this.stick.y);
+    if(this.len > DELTA) {
+
+        this.stick.x /= this.len;
+        this.stick.y /= this.len;
+    }
 
     // Calculate delta
     this.delta.x = this.stick.x - this.oldStick.x;

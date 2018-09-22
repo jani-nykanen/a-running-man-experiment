@@ -245,8 +245,8 @@ Graphics.prototype.drawLine = function (x1, y1, x2, y2) {
 
     while (true) {
 
-        if (!(y1 >= this.canvas.width - 1 || y1 < 0 ||
-            x1 >= this.canvas.height - 1 || x1 < 0)) {
+        if (!(y1 >= this.canvas.width  || y1 < 0 ||
+            x1 >= this.canvas.height || x1 < 0)) {
 
             this.fillRect(x1, y1, 1, 1);
         }
