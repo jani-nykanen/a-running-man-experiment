@@ -34,7 +34,7 @@ var Vpad = function (buttonList, input) {
 // Update virtual game pad
 Vpad.prototype.update = function() {
 
-    const DELTA = 0.01;
+    // const DELTA = 0.01;
 
     this.oldStick.x = this.stick.x;
     this.oldStick.y = this.stick.y;
@@ -65,12 +65,12 @@ Vpad.prototype.update = function() {
     }
 
     // Calculate length & restrict to a unit sphere (plus 0)
-    this.len = Math.hypot(this.stick.x, this.stick.y);
-    if(this.len > DELTA) {
-
-        this.stick.x /= this.len;
-        this.stick.y /= this.len;
-    }
+    // this.len = Math.hypot(this.stick.x, this.stick.y);
+    // if(this.len > DELTA) {
+    //
+    //    this.stick.x /= this.len;
+    //    this.stick.y /= this.len;
+    // }
 
     // Calculate delta
     this.delta.x = this.stick.x - this.oldStick.x;

@@ -61,6 +61,38 @@ RoadPiece.prototype.draw = function (g) {
 }
 
 
+// Player collision
+RoadPiece.prototype.playerCollision = function (pl) {
+
+    const DELTA = 0.05;
+
+    if (!this.exist) return;
+
+    let p = pl.pos;
+
+    if (!pl.canJump || p.z < this.z || p.z > this.z + this.depth)
+        return;
+
+    let w = this.width / 2 + DELTA;
+
+    let x1 = this.startX - w;
+    let z1 = this.z;
+    let x2 = this.startX + w;
+    let z2 = this.z;
+    let x3 = this.endX - w;
+    let z3 = this.z + this.depth;
+    let x4 = this.endX + w;
+    let z4 = this.z + this.depth;
+
+    // Check if inside the road area
+    if(isInsideTriangle(p.x, p.z, x1, z1, x2, z2, x3, z3) ||
+    isInsideTriangle(p.x, p.z, x3, z3, x4, z4, x2, z2) ) {
+
+        pl.touchRoad = true;
+    }
+}
+
+
 // ------ Actual road ------- //
 
 
@@ -78,7 +110,7 @@ var Road = function () {
     for (let i = 0; i < this.pieces.length; ++i) {
 
         this.pieces[i] = new RoadPiece(ROAD_WIDTH, ROAD_STEP);
-        if(i < START_POS / ROAD_STEP) {
+        if (i < START_POS / ROAD_STEP) {
 
             this.pieces[i].createSelf(0, 0, i * ROAD_STEP);
         }
@@ -120,7 +152,7 @@ Road.prototype.getNextRoadPieceIndex = function () {
 
 
 // Create a new road piece
-Road.prototype.createNewRoadPiece = function(x, z) {
+Road.prototype.createNewRoadPiece = function (x, z) {
 
     this.creationX = this.oldX + x;
 
@@ -133,7 +165,7 @@ Road.prototype.createNewRoadPiece = function(x, z) {
 
 
 // Update curvature
-Road.prototype.updateCurvature = function(speed, tm) {
+Road.prototype.updateCurvature = function (speed, tm) {
 
     const CURV_LIMIT = 1.5;
     const SPEED_MAX = 0.060;
@@ -147,18 +179,18 @@ Road.prototype.updateCurvature = function(speed, tm) {
     speed = Math.abs(speed) / SPEED_MAX;
 
     // Update curvature
-    if(this.curvDelta < this.curvTarget) {
+    if (this.curvDelta < this.curvTarget) {
 
         this.curvDelta += this.curvStep * speed * tm;
-        if(this.curvDelta > this.curvTarget) {
+        if (this.curvDelta > this.curvTarget) {
 
             this.curvDelta = this.curvTarget;
         }
     }
-    else if(this.curvDelta > this.curvTarget) {
+    else if (this.curvDelta > this.curvTarget) {
 
         this.curvDelta -= this.curvStep * speed * tm;
-        if(this.curvDelta < this.curvTarget) {
+        if (this.curvDelta < this.curvTarget) {
 
             this.curvDelta = this.curvTarget;
         }
@@ -166,37 +198,37 @@ Road.prototype.updateCurvature = function(speed, tm) {
     this.curvature += this.curvDelta * speed * tm;
 
     // Limit curvature
-    if(this.curvature > CURV_LIMIT) {
+    if (this.curvature > CURV_LIMIT) {
 
-        this.curvTarget = -Math.abs(this.curvature-CURV_LIMIT);
+        this.curvTarget = -Math.abs(this.curvature - CURV_LIMIT);
         this.curvDelta = 0.0;
         this.curvature = CURV_LIMIT;
     }
 
-    else if(this.curvature < -CURV_LIMIT) {
+    else if (this.curvature < -CURV_LIMIT) {
 
-        this.curvTarget = Math.abs(this.curvature- (-CURV_LIMIT) );
+        this.curvTarget = Math.abs(this.curvature - (-CURV_LIMIT));
         this.curvDelta = 0.0;
         this.curvature = -CURV_LIMIT;
     }
 
     // Update curvature timer
     this.curvTimer -= speed * tm;
-    if(this.curvTimer <= 0.0) {
+    if (this.curvTimer <= 0.0) {
 
         this.curvDelta = 0.0;
 
         this.curvTimer = Math.random() * CURVE_MAX + CURVE_MIN;
-        this.curvTarget = (Math.random() * 2 - 1.0) * TARGET_BASE 
-            * (1.0 + TARGET_SPEED_FACTOR*this.curvTimer / (CURVE_MIN+CURVE_MAX));
-        
+        this.curvTarget = (Math.random() * 2 - 1.0) * TARGET_BASE
+            * (1.0 + TARGET_SPEED_FACTOR * this.curvTimer / (CURVE_MIN + CURVE_MAX));
+
         this.curvStep = Math.abs(this.curvTarget) / this.curvTimer;
     }
 }
 
 
 // Update
-Road.prototype.update = function (globalSpeed, tm) {
+Road.prototype.update = function (globalSpeed, pl, tm) {
 
     const CURVATURE_FACTOR = 0.2;
     const NEAR = 0.5;
@@ -210,11 +242,15 @@ Road.prototype.update = function (globalSpeed, tm) {
     // Update road pieces
     for (let i = 0; i < this.pieces.length; ++i) {
 
-        if(this.pieces[i].update(globalSpeed, NEAR, tm)) {
+        // Player collision
+        this.pieces[i].playerCollision(pl);
+
+        // Update
+        if (this.pieces[i].update(globalSpeed, NEAR, tm)) {
 
             // Create a new road piece
             this.createNewRoadPiece(
-                this.curvature * CURVATURE_FACTOR, 
+                this.curvature * CURVATURE_FACTOR,
                 this.pieces[i].z);
         }
     }
@@ -226,8 +262,8 @@ Road.prototype.update = function (globalSpeed, tm) {
 Road.prototype.draw = function (g) {
 
     // Set "gradient"
-    g.setFloorRectGradient(72, 72+32, 
-        85, 48, 0, 
+    g.setFloorRectGradient(72, 72 + 32,
+        85, 48, 0,
         192, 144, 64);
 
     // Draw road pieces

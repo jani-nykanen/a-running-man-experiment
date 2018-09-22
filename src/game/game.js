@@ -10,8 +10,6 @@ var Game = function (app) {
 
     Scene.call(this, [app, "game"]);
 
-    const INITIAL_GLOBAL_SPEED = 0.05;
-
     // Create components
     this.bg = new Background();
     this.road = new Road();
@@ -35,7 +33,7 @@ Game.prototype.update = function (tm) {
     this.bg.update(this.player.speed.z, tm);
 
     // Update road
-    this.road.update(this.player.speed.z, tm);
+    this.road.update(this.player.speed.z, this.player, tm);
 
 }
 

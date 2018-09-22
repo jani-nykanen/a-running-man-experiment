@@ -8,18 +8,19 @@
 // Constructor
 var Player = function (z) {
 
-    const LIMIT_X = 0.0125;
+    const LIMIT_X = 0.010;
     const LIMIT_Z = 0.065;
+    const LIMIT_OFF_ROAD = 0.020;
 
     // Position
-    this.pos = { x: 0, y: 0, z: z };
+    this.pos = { x: 0.00001, y: 0, z: z };
     // Speed
     this.speed = { x: 0, y: 0, z: 0 };
     // Target speed
     this.target = { x: 0, y: 0, z: 0 };
 
     // Speed limits
-    this.speedLimit = { x: LIMIT_X, z: LIMIT_Z };
+    this.speedLimit = { x: LIMIT_X, z: LIMIT_Z, offroad: LIMIT_OFF_ROAD };
 
     // Can jump
     this.canJump = false;
@@ -29,6 +30,8 @@ var Player = function (z) {
     this.rolling = false;
     // Roll timer
     this.rollTimer = 0.0;
+    // Does touch road
+    this.touchRoad = false;
 
     // Flip (for sprite)
     this.flip = Flip.None;
@@ -75,7 +78,7 @@ Player.prototype.control = function (vpad, tm) {
     const DOUBLE_JUMP_HEIGHT = 0.035;
     const JUMP_END_DIVISOR = 2;
     const ROLL_TIME = 60.0;
-    const ROLL_BONUS = 1.25;
+    const ROLL_BONUS = 1.5;
     const ROLL_JUMP_HEIGHT = 0.0525;
     const ROLL_JUMP_BONUS = 1.15;
 
@@ -99,7 +102,8 @@ Player.prototype.control = function (vpad, tm) {
     // "Depth"
     if (!this.rolling && vpad.stick.y < -DELTA) {
 
-        this.target.z = -vpad.stick.y * this.speedLimit.z;
+        this.target.z = -vpad.stick.y *
+            (this.touchRoad ? this.speedLimit.z : this.speedLimit.offroad);
     }
 
     // Brakes
@@ -118,10 +122,10 @@ Player.prototype.control = function (vpad, tm) {
     let f2 = vpad.buttons.fire2;
     if (f1 == State.Pressed) {
 
-        if(this.canJump) {
+        if (this.canJump) {
 
             let height = JUMP_HEIGHT;
-            if(this.rolling) {
+            if (this.rolling) {
 
                 this.doubleJump = true;
                 this.rolling = false;
@@ -134,7 +138,7 @@ Player.prototype.control = function (vpad, tm) {
 
             this.speed.y = -height;
         }
-        else if(!this.doubleJump) {
+        else if (!this.doubleJump) {
 
             this.speed.y = -DOUBLE_JUMP_HEIGHT;
             this.doubleJump = true;
@@ -146,19 +150,31 @@ Player.prototype.control = function (vpad, tm) {
     }
 
     // Roll
-    if(!this.rolling && this.canJump && vpad.stick.y < -DELTA 
+    if (!this.rolling && this.canJump && vpad.stick.y < -DELTA
         && f2 == State.Pressed) {
 
         this.rolling = true;
         this.rollTimer = ROLL_TIME;
 
-        this.speed.x *= ROLL_BONUS;
-        this.speed.z *= ROLL_BONUS
+        this.speed.x = Math.abs(this.speed.x) * vpad.stick.x * ROLL_BONUS;
+        this.speed.z *= ROLL_BONUS;
     }
-    else if(this.rolling && this.rollTimer > 0.0 && f2 == State.Released) {
+    else if (this.rolling && this.rollTimer > 0.0 && f2 == State.Released) {
 
         this.rollTimer = 0.0;
     }
+}
+
+
+// Restrict speed
+Player.prototype.restrictSpeed = function () {
+
+    if (this.speed.x > 0.0)
+        this.speed.x = Math.min(this.speedLimit.x, this.speed.x);
+    else
+        this.speed.x = Math.max(-this.speedLimit.x, this.speed.x);
+
+    this.speed.z = Math.min(this.speedLimit.z, this.speed.z);
 }
 
 
@@ -167,12 +183,18 @@ Player.prototype.move = function (tm) {
 
     const ACCELERATION_X = 0.0020;
     const ACCELERATION_Z = 0.0010;
+    const ACC_OFF_ROAD = 0.0020;
     const GRAVITY_ACC = 0.002;
-    const SLOW_MODIF = 0.50;
+    const SLOW_MODIF = 0.80;
 
     // Calculate Z acceleration
-    let accl = ACCELERATION_Z - (ACCELERATION_Z * SLOW_MODIF) *
-        Math.min(1.0, Math.pow(this.speed.z / this.speedLimit.z, 2));
+    let accl = 0;
+    if (this.touchRoad)
+        accl = ACCELERATION_Z - (ACCELERATION_Z * SLOW_MODIF) *
+            Math.min(1.0, Math.pow(this.speed.z / this.speedLimit.z, 2));
+    else
+        accl = ACC_OFF_ROAD;
+
 
     // Update speeds
     this.speed.x = this.updateSpeed(
@@ -190,6 +212,11 @@ Player.prototype.move = function (tm) {
     this.canJump = false;
     if (this.pos.y >= 0.0 && this.speed.y >= 0.0) {
 
+        if (this.doubleJump) {
+
+            this.restrictSpeed();
+        }
+
         this.pos.y = 0.0;
         this.speed.y = 0.0;
         this.canJump = true;
@@ -197,51 +224,46 @@ Player.prototype.move = function (tm) {
     }
 
     // Update rolling
-    if(this.rolling) {
+    if (this.rolling) {
 
         this.rollTimer -= 1.0 * tm;
-        if(this.rollTimer <= 0.0) {
+        if (this.rollTimer <= 0.0) {
 
             this.rolling = false;
 
-            if(this.speed.x > 0.0)
-                this.speed.x = Math.min(this.speedLimit.x, this.speed.x);
-            else
-                this.speed.x = Math.max(-this.speedLimit.x, this.speed.x);
-
-            this.speed.z = Math.min(this.speedLimit.z, this.speed.z);
+            this.restrictSpeed();
         }
     }
 }
 
 
 // Animate
-Player.prototype.animate = function(tm) {
+Player.prototype.animate = function (tm) {
 
     const DELTA = 0.0001;
     const JUMP_DELTA = 0.01;
     const ROLL_SPEED = 4;
 
     // Double jumping or rolling
-    if(this.doubleJump || this.rolling) {
-        
+    if (this.doubleJump || this.rolling) {
+
         this.spr.animate(this.animRow, 8, 11, ROLL_SPEED, tm);
     }
     // Jumping
-    else if(!this.canJump) {
+    else if (!this.canJump) {
 
-        let frame = 4; 
-        if(this.speed.y < 0.0) {
+        let frame = 4;
+        if (this.speed.y < 0.0) {
 
-            if(this.speed.y > -JUMP_DELTA) {
+            if (this.speed.y > -JUMP_DELTA) {
 
                 frame = 5;
             }
         }
-        else if(this.speed.y >= 0.0) {
-            
+        else if (this.speed.y >= 0.0) {
+
             frame = 5 + Math.floor(this.speed.y / JUMP_DELTA);
-            if(frame > 7) frame = 7;
+            if (frame > 7) frame = 7;
         }
 
         this.spr.animate(this.animRow, frame, frame, 0, tm);
@@ -250,14 +272,14 @@ Player.prototype.animate = function(tm) {
     else {
 
         // Running
-        let totalSpeed = Math.hypot(this.speed.x, this.speed.z);
-        if(totalSpeed < DELTA) {
+        let totalSpeed = Math.max(Math.abs(this.speed.x), Math.abs(this.speed.z) );
+        if (totalSpeed < DELTA) {
 
             this.spr.animate(this.animRow, 0, 0, 0, tm);
         }
         else {
 
-            let speed = 12-Math.floor(totalSpeed / 0.01);
+            let speed = 12 - Math.floor(totalSpeed / 0.01);
             this.spr.animate(this.animRow, 0, 3, speed, tm);
         }
 
@@ -291,6 +313,9 @@ Player.prototype.update = function (vpad, camX, tm) {
     // Animate
     this.animate(tm);
 
+    if(this.canJump)
+        this.touchRoad = false;
+
     // Update camera
     return this.updateCamera(camX, tm);
 }
@@ -307,7 +332,7 @@ Player.prototype.draw = function (g, a) {
     // Draw shadow
     let sy = g.project(this.pos.x, 0.0, this.pos.z).y;
     let frame = Math.floor(Math.abs(this.pos.y) / SHADOW_DIVISOR);
-    g.drawBitmapRegion(a.bitmaps.shadow, 24 * frame, 0, 24, 24, p.x-12, sy-20);
+    g.drawBitmapRegion(a.bitmaps.shadow, 24 * frame, 0, 24, 24, p.x - 12, sy - 20);
 
     let yplus = this.rolling ? 2 : 0;
 
