@@ -154,8 +154,6 @@ Player.prototype.control = function (vpad, tm) {
 
         this.speed.x *= ROLL_BONUS;
         this.speed.z *= ROLL_BONUS
-
-        console.log(this.speed.z);
     }
     else if(this.rolling && this.rollTimer > 0.0 && f2 == State.Released) {
 
