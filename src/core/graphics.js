@@ -148,18 +148,21 @@ Graphics.prototype.drawBitmapRegion = function (bmp, sx, sy, sw, sh, dx, dy, fli
 
         c.translate(sw, 0);
         c.scale(-1, 1);
+        dx *= -1;
     }
     // Flip vertically
     if ((flip & Flip.Vertical) != 0) {
 
         c.translate(0, sh);
         c.scale(1, -1);
+        dy *= -1;
     }
 
     c.drawImage(bmp, sx | 0, sy | 0, sw, sh, dx | 0, dy | 0, sw, sh);
 
     // ... and restore the old
     if (flip != Flip.None) {
+
         c.restore();
     }
 }

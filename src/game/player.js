@@ -26,6 +26,11 @@ var Player = function (z) {
     // Has double jumped
     this.doubleJump = false;
 
+    // Flip (for sprite)
+    this.flip = Flip.None;
+    // Running animation row
+    this.runningRow = 0;
+
     // Sprite
     this.spr = new Sprite(24, 24);
 }
@@ -72,10 +77,15 @@ Player.prototype.control = function (vpad, tm) {
     this.target.y = GRAVITY;
 
     // Horizontal
+    this.runningRow = 0;
+    this.flip = Flip.None;
     if (Math.abs(vpad.stick.x) > DELTA) {
 
         this.target.x = vpad.stick.x * this.speedLimit.x;
         this.target.x *= 1.0 + X_BONUS * Math.abs(this.speed.z) / this.speedLimit.z;
+
+        this.runningRow = 1;
+        this.flip = vpad.stick.x < 0.0 ? Flip.Horizontal : Flip.None;
     }
 
     // "Depth"
@@ -181,7 +191,7 @@ Player.prototype.animate = function(tm) {
             if(frame > 7) frame = 7;
         }
 
-        this.spr.animate(0, frame, frame, 0, tm);
+        this.spr.animate(this.runningRow, frame, frame, 0, tm);
 
     }
     else {
@@ -190,12 +200,12 @@ Player.prototype.animate = function(tm) {
         let totalSpeed = Math.hypot(this.speed.x, this.speed.z);
         if(totalSpeed < DELTA) {
 
-            this.spr.animate(0, 0, 0, 0, tm);
+            this.spr.animate(this.runningRow, 0, 0, 0, tm);
         }
         else {
 
             let speed = 12-Math.floor(totalSpeed / 0.01);
-            this.spr.animate(0, 0, 3, speed, tm);
+            this.spr.animate(this.runningRow, 0, 3, speed, tm);
         }
 
     }
@@ -247,5 +257,5 @@ Player.prototype.draw = function (g, a) {
     g.drawBitmapRegion(a.bitmaps.shadow, 24 * frame, 0, 24, 24, p.x-12, sy-20);
 
     // Draw sprite
-    this.spr.draw(g, a.bitmaps.player, p.x - 12, p.y - 20);
+    this.spr.draw(g, a.bitmaps.player, p.x - 12, p.y - 20, this.flip);
 }
