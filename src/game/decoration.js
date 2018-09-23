@@ -52,9 +52,9 @@ Decoration.prototype.draw = function(g, a) {
     if(!this.exist) return;
 
     g.drawFlat3D(a.bitmaps.decorations,
-        this.id * 48, 0, 48, 48,
+        0, this.id * 48, 48, 48,
         this.pos.x, this.pos.y, this.pos.z,
-        1.5, 1.5,
-        this.flip);
+        1.5, 1.5, 3,
+        this.flip, true);
         
 }

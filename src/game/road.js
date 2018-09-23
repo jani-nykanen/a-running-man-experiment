@@ -4,98 +4,7 @@
  * @author Jani Nykänen
  */
 
-
-// ------ Road piece ------- //
-
-// Constructor
-var RoadPiece = function (width, depth) {
-
-    this.width = width;
-    this.depth = depth;
-
-    this.startX = 0;
-    this.endX = 0;
-    this.z = 0;
-
-    this.exist = false;
-}
-
-
-// Create
-RoadPiece.prototype.createSelf = function (sx, ex, z) {
-
-    this.startX = sx;
-    this.endX = ex;
-    this.z = z;
-
-    this.exist = true;
-}
-
-
-// Update
-RoadPiece.prototype.update = function (globalSpeed, near, tm) {
-
-    if (!this.exist) return false;
-
-    // Move
-    this.z -= globalSpeed * tm;
-    if (this.z < near) {
-
-        this.exist = false;
-        return true;
-    }
-
-    return false;
-}
-
-
-// Draw
-RoadPiece.prototype.draw = function (g) {
-
-    if (!this.exist) return;
-
-    g.drawFloorRect(this.startX - this.width / 2, this.endX - this.width / 2,
-        0, this.z,
-        this.width, this.depth,
-        true);
-}
-
-
-// Player collision
-RoadPiece.prototype.playerCollision = function (pl) {
-
-    const DELTA = 0.05;
-
-    if (!this.exist) return;
-
-    let p = pl.pos;
-
-    if (!pl.canJump || p.z < this.z || p.z > this.z + this.depth)
-        return;
-
-    let w = this.width / 2 + DELTA;
-
-    let x1 = this.startX - w;
-    let z1 = this.z;
-    let x2 = this.startX + w;
-    let z2 = this.z;
-    let x3 = this.endX - w;
-    let z3 = this.z + this.depth;
-    let x4 = this.endX + w;
-    let z4 = this.z + this.depth;
-
-    // Check if inside the road area
-    if(isInsideTriangle(p.x, p.z, x1, z1, x2, z2, x3, z3) ||
-    isInsideTriangle(p.x, p.z, x3, z3, x4, z4, x2, z2) ) {
-
-        pl.touchRoad = true;
-    }
-}
-
-
-// ------ Actual road ------- //
-
-
+ 
 // Constructor
 var Road = function () {
 
@@ -179,8 +88,8 @@ Road.prototype.createNewRoadPiece = function (x, z) {
 // Create a new decoration
 Road.prototype.createDecoration = function(middle, z, dir) {
 
-    const DIST_MIN = 1.25;
-    const DIST_MAX = 2.5;
+    const DIST_MIN = 1.5;
+    const DIST_MAX = 3.5;
 
     let dist = Math.random() * (DIST_MAX - DIST_MIN) + DIST_MIN;
 
@@ -257,21 +166,25 @@ Road.prototype.updateCurvature = function (speed, tm) {
 // Update decoration generator
 Road.prototype.updateDecGenerator = function(z) {
 
-    const WAIT_MIN = 1;
-    const WAIT_MAX = 20;
+    const WAIT_MIN = 2;
+    const WAIT_MIN_UP = 5;
+    const WAIT_MAX_BASE = 8;
     const DUAL_PROB = 0.25;
 
     -- this.decTimer;
     if(this.decTimer <= 0) {
 
         let count = Math.random() <= DUAL_PROB ? 2 : 1;
+        let waitMax = WAIT_MAX_BASE * (count);
+        let waitMin = WAIT_MIN + WAIT_MIN_UP * (count -1);
+
         for(let i = 0; i < count; ++ i) {
 
             let dir = count == 1 ? (Math.random() <= 0.5 ? 1 : -1) : (i == 0 ? 1 : -1);
 
             this.createDecoration(this.oldX, z, dir);
         }
-        this.decTimer += Math.floor(Math.random()*(WAIT_MAX-WAIT_MIN) + WAIT_MIN);
+        this.decTimer += Math.floor(Math.random()*(waitMax-waitMin) + waitMin);
     }
 }
 
@@ -333,12 +246,15 @@ Road.prototype.draw = function (g) {
 }
 
 
-// "Post" draw
-Road.prototype.postDraw = function(g, a) {
+// Draw decorations
+Road.prototype.drawDecorations = function(obuf) {
 
     // Draw decorations
     for(let i = 0; i < this.decorations.length; ++ i) {
 
-        this.decorations[i].draw(g, a);
+        if(this.decorations[i].exist) {
+
+            obuf.addObject(this.decorations[i]);
+        }
     }
 }

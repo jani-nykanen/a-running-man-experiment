@@ -10,12 +10,15 @@ var Game = function (app) {
 
     Scene.call(this, [app, "game"]);
 
+    const OBUF_SIZE = 64;
+
     // Create components
     this.bg = new Background();
     this.road = new Road();
 
     // Create game objects
     this.player = new Player(1.25);
+    this.obuf = new ObjectBuffer(OBUF_SIZE);
 
     // Camera X
     this.camX = 0.0;
@@ -56,8 +59,12 @@ Game.prototype.draw = function (g) {
     this.bg.postDraw(g, this.assets);
 
     // Post draw road
-    this.road.postDraw(g, this.assets);
+    this.road.drawDecorations(this.obuf);
 
-    // Draw player
-    this.player.draw(g, this.assets);
+    // Push player to the buffer
+    this.obuf.addObject(this.player);
+
+    // Draw buffer
+    this.obuf.sortByDepth();
+    this.obuf.draw(g, this.assets);
 }
