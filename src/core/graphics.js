@@ -128,11 +128,28 @@ Graphics.prototype.drawBitmap = function (bmp, x, y, flip) {
 }
 
 
+// Draw a scaled bitmap
+Graphics.prototype.drawScaledBitmap = function (bmp, dx, dy, dw, dh,  flip) {
+
+    this.drawScaledBitmapRegion(bmp, 0, 0, bmp.width, bmp.height, dx, dy, dw, dh, flip);
+}
+
+
 // Draw a bitmap region
 Graphics.prototype.drawBitmapRegion = function (bmp, sx, sy, sw, sh, dx, dy, flip) {
 
+    this.drawScaledBitmapRegion(bmp, sx, sy, sw, sh, dx, dy, sw, sh, flip);
+}
+
+
+// Draw a scaled bitmap region
+Graphics.prototype.drawScaledBitmapRegion = function (bmp, sx, sy, sw, sh, dx, dy, dw, dh, flip) {
+
     sw = sw | 0;
     sh = sh | 0;
+
+    dw = dw | 0;
+    dh = dh | 0;
 
     flip = flip | Flip.None;
     let c = this.ctx;
@@ -146,19 +163,19 @@ Graphics.prototype.drawBitmapRegion = function (bmp, sx, sy, sw, sh, dx, dy, fli
     // Flip horizontally
     if ((flip & Flip.Horizontal) != 0) {
 
-        c.translate(sw, 0);
+        c.translate(dw, 0);
         c.scale(-1, 1);
         dx *= -1;
     }
     // Flip vertically
     if ((flip & Flip.Vertical) != 0) {
 
-        c.translate(0, sh);
+        c.translate(0, dh);
         c.scale(1, -1);
         dy *= -1;
     }
 
-    c.drawImage(bmp, sx | 0, sy | 0, sw, sh, dx | 0, dy | 0, sw, sh);
+    c.drawImage(bmp, sx | 0, sy | 0, sw, sh, dx | 0, dy | 0, dw, dh);
 
     // ... and restore the old
     if (flip != Flip.None) {
