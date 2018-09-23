@@ -103,6 +103,7 @@ var Road = function () {
     const ROAD_WIDTH = 1.5;
     const ROAD_COUNT = 32;
     const START_POS = 8.0;
+    const DEC_COUNT = 32;
 
     // Road pieces
     this.pieces = new Array(ROAD_COUNT);
@@ -114,6 +115,14 @@ var Road = function () {
 
             this.pieces[i].createSelf(0, 0, i * ROAD_STEP);
         }
+    }
+
+    // Decorations
+    this.decorations = new Array(DEC_COUNT);
+    // Make sure they don't exist
+    for(let i = 0; i < this.decorations.length; ++ i) {
+
+        this.decorations[i] = new Decoration();
     }
 
     // Creation timer
@@ -136,15 +145,18 @@ var Road = function () {
     this.curvStep = 0.0;
     // Curvature change time
     this.curvTimer = 0.0;
+
+    // Decoration timer
+    this.decTimer = 0.0;
 }
 
 
 // The name says it all
-Road.prototype.getNextRoadPieceIndex = function () {
+Road.prototype.getNextAvailableObject = function (arr) {
 
-    for (let i = 0; i < this.pieces.length; ++i) {
+    for (let i = 0; i < arr.length; ++i) {
 
-        if (!this.pieces[i].exist)
+        if (!arr[i].exist)
             return i;
     }
     return 0;
@@ -157,10 +169,25 @@ Road.prototype.createNewRoadPiece = function (x, z) {
     this.creationX = this.oldX + x;
 
     // Create a road piece
-    let i = this.getNextRoadPieceIndex();
+    let i = this.getNextAvailableObject(this.pieces);
     this.pieces[i].createSelf(this.oldX, this.creationX, z + this.startPos);
 
     this.oldX = this.creationX;
+}
+
+
+// Create a new decoration
+Road.prototype.createDecoration = function(middle, z, dir) {
+
+    const DIST_MIN = 1.25;
+    const DIST_MAX = 2.5;
+
+    let dist = Math.random() * (DIST_MAX - DIST_MIN) + DIST_MIN;
+
+    let i = this.getNextAvailableObject(this.decorations);
+    let x = middle + dist * dir;
+
+    this.decorations[i].createSelf(x, 0.0, z + this.startPos, 0);
 }
 
 
@@ -227,6 +254,28 @@ Road.prototype.updateCurvature = function (speed, tm) {
 }
 
 
+// Update decoration generator
+Road.prototype.updateDecGenerator = function(z) {
+
+    const WAIT_MIN = 1;
+    const WAIT_MAX = 20;
+    const DUAL_PROB = 0.25;
+
+    -- this.decTimer;
+    if(this.decTimer <= 0) {
+
+        let count = Math.random() <= DUAL_PROB ? 2 : 1;
+        for(let i = 0; i < count; ++ i) {
+
+            let dir = count == 1 ? (Math.random() <= 0.5 ? 1 : -1) : (i == 0 ? 1 : -1);
+
+            this.createDecoration(this.oldX, z, dir);
+        }
+        this.decTimer += Math.floor(Math.random()*(WAIT_MAX-WAIT_MIN) + WAIT_MIN);
+    }
+}
+
+
 // Update
 Road.prototype.update = function (globalSpeed, pl, tm) {
 
@@ -248,11 +297,20 @@ Road.prototype.update = function (globalSpeed, pl, tm) {
         // Update
         if (this.pieces[i].update(globalSpeed, NEAR, tm)) {
 
+            // Generate decorations, maybe
+            this.updateDecGenerator(this.pieces[i].z);
+
             // Create a new road piece
             this.createNewRoadPiece(
                 this.curvature * CURVATURE_FACTOR,
                 this.pieces[i].z);
         }
+    }
+
+    // Update decorations
+    for(let i = 0; i < this.decorations.length; ++ i) {
+
+        this.decorations[i].update(globalSpeed, NEAR, tm);
     }
 
 }
@@ -270,5 +328,17 @@ Road.prototype.draw = function (g) {
     for (let i = 0; i < this.pieces.length; ++i) {
 
         this.pieces[i].draw(g);
+    }
+
+}
+
+
+// "Post" draw
+Road.prototype.postDraw = function(g, a) {
+
+    // Draw decorations
+    for(let i = 0; i < this.decorations.length; ++ i) {
+
+        this.decorations[i].draw(g, a);
     }
 }

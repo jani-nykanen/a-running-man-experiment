@@ -19,6 +19,7 @@ let assetInfo = {
         clouds: "clouds.png",
         player: "player.png",
         shadow: "shadow.png",
+        decorations: "decorations.png",
     }
 };
 

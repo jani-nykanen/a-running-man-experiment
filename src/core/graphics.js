@@ -36,6 +36,7 @@ var Graphics = function (canvasName) {
     // Get canvas & context
     this.canvas = document.getElementById(canvasName);
     this.ctx = this.canvas.getContext("2d");
+    this.ctx.imageSmoothingEnabled= false
 
     // Global color
     this.globalColor = getColorString(255, 255, 255);
@@ -323,6 +324,22 @@ Graphics.prototype.drawFloorRect = function (x1, x2, y, z, width, depth, outline
         this.drawLine(p1.x, p1.y, p2.x, p2.y);
         this.drawLine(q1.x, q1.y, q2.x, q2.y);
     }
+}
+
+
+// Draw flat object in 3D space
+Graphics.prototype.drawFlat3D = function(bmp, sx, sy, sw, sh, x, y, z, w, h, flip) {
+
+    let p1 = this.project(x-w/2, y-h, z);
+    let p2 = this.project(x+w/2, y, z);
+    if(p1 == null || p2 == null) return;
+
+    let dx = p1.x;
+    let dy = p1.y;
+    let dw = p2.x - p1.x;
+    let dh = p2.y - p1.y;
+
+    this.drawScaledBitmapRegion(bmp, sx, sy, sw, sh, dx, dy, dw, dh, flip);
 }
 
 

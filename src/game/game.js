@@ -55,6 +55,9 @@ Game.prototype.draw = function (g) {
     // Post draw background
     this.bg.postDraw(g, this.assets);
 
+    // Post draw road
+    this.road.postDraw(g, this.assets);
+
     // Draw player
     this.player.draw(g, this.assets);
 }
