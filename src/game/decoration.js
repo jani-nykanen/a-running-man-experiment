@@ -18,15 +18,24 @@ var Decoration = function() {
 // Create
 Decoration.prototype.createSelf = function(x, y, z, id) {
 
+    const MAX_ID = 7;
+
     this.pos.x = x;
     this.pos.y = y;
     this.pos.z = z;
 
-    this.id = id;
+    this.id = id || ( (Math.random() * MAX_ID) | 0 );
 
     this.flip = Math.random() <= 0.5 ? Flip.Horizontal : Flip.None;
 
     this.exist = true;
+
+    this.sizes = [
+        1.5, 1.5,
+        1.0, 1.0,
+        1.0, 1.0,
+        1.25,
+    ];
 }
 
 
@@ -54,7 +63,8 @@ Decoration.prototype.draw = function(g, a) {
     g.drawFlat3D(a.bitmaps.decorations,
         0, this.id * 48, 48, 48,
         this.pos.x, this.pos.y, this.pos.z,
-        1.5, 1.5, 3,
+        this.sizes[this.id], this.sizes[this.id],
+         6,
         this.flip, true);
         
 }

@@ -57,6 +57,8 @@ var Road = function () {
 
     // Decoration timer
     this.decTimer = 0.0;
+    // Tree timer
+    this.treeTimer = 0.0;
 }
 
 
@@ -86,17 +88,20 @@ Road.prototype.createNewRoadPiece = function (x, z) {
 
 
 // Create a new decoration
-Road.prototype.createDecoration = function(middle, z, dir) {
+Road.prototype.createDecoration = function(middle, z, dir, id) {
 
     const DIST_MIN = 1.5;
-    const DIST_MAX = 3.5;
+    const DIST_MAX_BASE = 3.5;
+    const DIST_MAX_TREE = 5.0;
 
-    let dist = Math.random() * (DIST_MAX - DIST_MIN) + DIST_MIN;
+    let max = id == null ? DIST_MAX_BASE : DIST_MAX_TREE;
+
+    let dist = Math.random() * (max - DIST_MIN) + DIST_MIN;
 
     let i = this.getNextAvailableObject(this.decorations);
     let x = middle + dist * dir;
 
-    this.decorations[i].createSelf(x, 0.0, z + this.startPos, 0);
+    this.decorations[i].createSelf(x, 0.0, z + this.startPos, id);
 }
 
 
@@ -166,25 +171,48 @@ Road.prototype.updateCurvature = function (speed, tm) {
 // Update decoration generator
 Road.prototype.updateDecGenerator = function(z) {
 
-    const WAIT_MIN = 2;
-    const WAIT_MIN_UP = 5;
-    const WAIT_MAX_BASE = 8;
+    const WAIT_MIN = 8;
+    const WAIT_MIN_UP = 6;
+    const WAIT_MAX_BASE = 16;
     const DUAL_PROB = 0.25;
 
+    const TREE_MIN = 3;
+    const TREE_MAX = 8;
+
     -- this.decTimer;
-    if(this.decTimer <= 0) {
+    -- this.treeTimer;
+    if(this.decTimer <= 0 || this.treeTimer <= 0) {
 
         let count = Math.random() <= DUAL_PROB ? 2 : 1;
         let waitMax = WAIT_MAX_BASE * (count);
         let waitMin = WAIT_MIN + WAIT_MIN_UP * (count -1);
 
+        // Maybe we want to create trees
+        let id = null;
+        if(this.treeTimer <= 0) {
+
+            this.treeTimer += Math.floor(Math.random()*(TREE_MAX-TREE_MIN) + TREE_MIN);
+            id = (Math.random() * 2) | 0;
+
+            if(this.decTimer <= 0)
+                this.decTimer += 2;
+        }
+        else {
+
+            this.decTimer += Math.floor(Math.random()*(waitMax-waitMin) + waitMin);
+        }
+
         for(let i = 0; i < count; ++ i) {
 
-            let dir = count == 1 ? (Math.random() <= 0.5 ? 1 : -1) : (i == 0 ? 1 : -1);
+             let dir = count == 1 ? (Math.random() <= 0.5 ? 1 : -1) : (i == 0 ? 1 : -1);
 
-            this.createDecoration(this.oldX, z, dir);
+            this.createDecoration(this.oldX, z, dir, id);
+            if(id != null) {
+
+                id = (Math.random() * 2) | 0;
+            }
         }
-        this.decTimer += Math.floor(Math.random()*(waitMax-waitMin) + waitMin);
+
     }
 }
 
