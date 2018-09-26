@@ -75,17 +75,24 @@ Decoration.prototype.update = function(speed, near, tm) {
 Decoration.prototype.playerCollision = function(pl) {
 
     const DEPTH = 0.05;
+    const DELTA = 0.05;
 
     if(!this.exist) return;
 
     let w = this.widths[this.id];
     let h = this.heights[this.id];
 
-    if(pl.speed.z > 0.0 && pl.pos.z > this.pos.z - DEPTH && pl.pos.z < this.pos.z + DEPTH
+    if(pl.speed.z > 0.0 && pl.pos.z > this.pos.z - DEPTH && pl.pos.z < this.pos.z + DEPTH + pl.speed.z
         && pl.pos.x > this.pos.x-w/2 && pl.pos.x < this.pos.x+w/2 
         && pl.pos.y > this.pos.y-h) {
 
+        if(Math.abs(pl.speed.z) > DELTA) {
+
+            this.pos.z += pl.pos.z - (this.pos.z-DEPTH);
+        }
+
         pl.speed.z = 0.0;
+        pl.target.z = 0.0;
     }
 }
 

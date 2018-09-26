@@ -13,6 +13,8 @@ let assetInfo = {
     bitmaps: {
 
         font: "font.png",
+        fontBig: "font_big.png",
+        tinyText: "tiny_text.png",
         forest: "forest.png",
         sky: "sky.png",
         mountains: "mountains.png",

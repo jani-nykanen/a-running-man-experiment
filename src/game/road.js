@@ -227,6 +227,13 @@ Road.prototype.update = function (pl, tm) {
     const CURVATURE_FACTOR = 0.2;
     const NEAR = 0.5;
 
+     // Update decorations
+     for(let i = 0; i < this.decorations.length; ++ i) {
+
+        this.decorations[i].playerCollision(pl);
+        this.decorations[i].update(pl.speed.z, NEAR, tm);
+    }
+
     // Update timer
     this.creationTimer += pl.speed.z * tm;
 
@@ -250,13 +257,6 @@ Road.prototype.update = function (pl, tm) {
                 this.curvature * CURVATURE_FACTOR,
                 this.pieces[i].z);
         }
-    }
-
-    // Update decorations
-    for(let i = 0; i < this.decorations.length; ++ i) {
-
-        this.decorations[i].playerCollision(pl);
-        this.decorations[i].update(pl.speed.z, NEAR, tm);
     }
 }
 

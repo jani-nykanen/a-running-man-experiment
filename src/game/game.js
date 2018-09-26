@@ -15,6 +15,7 @@ var Game = function (app) {
     // Create components
     this.bg = new Background();
     this.road = new Road();
+    this.hud = new HUD();
 
     // Create game objects
     this.player = new Player(1.25);
@@ -29,14 +30,17 @@ Game.prototype = Object.create(Scene.prototype);
 // Update function
 Game.prototype.update = function (tm) {
 
+    // Update player & camera
+    this.camX = this.player.update(this.vpad, this.camX, tm);
+
     // Update road
     this.road.update(this.player, tm);
 
     // Update background
     this.bg.update(this.player.speed.z, tm);
 
-    // Update player & camera
-    this.camX = this.player.update(this.vpad, this.camX, tm);
+    // Update HUD
+    this.hud.update(this.player, tm);
 
 }
 
@@ -67,4 +71,7 @@ Game.prototype.draw = function (g) {
     // Draw buffer
     this.obuf.sortByDepth();
     this.obuf.draw(g, this.assets);
+
+    // Draw HUD
+    this.hud.draw(g, this.assets);
 }
