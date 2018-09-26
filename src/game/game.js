@@ -29,14 +29,14 @@ Game.prototype = Object.create(Scene.prototype);
 // Update function
 Game.prototype.update = function (tm) {
 
-    // Update player & camera
-    this.camX = this.player.update(this.vpad, this.camX, tm);
+    // Update road
+    this.road.update(this.player, tm);
 
     // Update background
     this.bg.update(this.player.speed.z, tm);
 
-    // Update road
-    this.road.update(this.player.speed.z, this.player, tm);
+    // Update player & camera
+    this.camX = this.player.update(this.vpad, this.camX, tm);
 
 }
 

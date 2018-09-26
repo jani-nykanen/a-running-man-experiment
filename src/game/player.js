@@ -18,7 +18,7 @@ var Player = function (z) {
     this.speed = { x: 0, y: 0, z: 0 };
     // Target speed
     this.target = { x: 0, y: 0, z: 0 };
-
+    
     // Speed limits
     this.speedLimit = { x: LIMIT_X, z: LIMIT_Z, offroad: LIMIT_OFF_ROAD };
 

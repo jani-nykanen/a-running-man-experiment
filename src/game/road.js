@@ -92,7 +92,7 @@ Road.prototype.createDecoration = function(middle, z, dir, id) {
 
     const DIST_MIN = 1.5;
     const DIST_MAX_BASE = 3.5;
-    const DIST_MAX_TREE = 5.0;
+    const DIST_MAX_TREE = 4.5;
 
     let max = id == null ? DIST_MAX_BASE : DIST_MAX_TREE;
 
@@ -171,13 +171,16 @@ Road.prototype.updateCurvature = function (speed, tm) {
 // Update decoration generator
 Road.prototype.updateDecGenerator = function(z) {
 
-    const WAIT_MIN = 8;
-    const WAIT_MIN_UP = 6;
-    const WAIT_MAX_BASE = 16;
+    const WAIT_MIN = 4;
+    const WAIT_MIN_UP = 4;
+    const WAIT_MAX_BASE = 12;
     const DUAL_PROB = 0.25;
+    const WAIT_DELAY = 4;
+    const WAIT_DELTA = 2;
 
-    const TREE_MIN = 3;
-    const TREE_MAX = 8;
+    const TREE_MIN = 4;
+    const TREE_MAX = 10;
+    const TREE_ID_MAX = 3;
 
     -- this.decTimer;
     -- this.treeTimer;
@@ -192,24 +195,25 @@ Road.prototype.updateDecGenerator = function(z) {
         if(this.treeTimer <= 0) {
 
             this.treeTimer += Math.floor(Math.random()*(TREE_MAX-TREE_MIN) + TREE_MIN);
-            id = (Math.random() * 2) | 0;
+            id = (Math.random() * TREE_ID_MAX) | 0;
 
-            if(this.decTimer <= 0)
-                this.decTimer += 2;
+            if(this.decTimer <= WAIT_DELTA)
+                this.decTimer = WAIT_DELAY - WAIT_DELTA;
         }
         else {
 
+            id = null;
             this.decTimer += Math.floor(Math.random()*(waitMax-waitMin) + waitMin);
         }
 
         for(let i = 0; i < count; ++ i) {
 
-             let dir = count == 1 ? (Math.random() <= 0.5 ? 1 : -1) : (i == 0 ? 1 : -1);
+            let dir = count == 1 ? (Math.random() <= 0.5 ? 1 : -1) : (i == 0 ? 1 : -1);
 
             this.createDecoration(this.oldX, z, dir, id);
             if(id != null) {
 
-                id = (Math.random() * 2) | 0;
+                id = (Math.random() * TREE_ID_MAX) | 0;
             }
         }
 
@@ -218,16 +222,16 @@ Road.prototype.updateDecGenerator = function(z) {
 
 
 // Update
-Road.prototype.update = function (globalSpeed, pl, tm) {
+Road.prototype.update = function (pl, tm) {
 
     const CURVATURE_FACTOR = 0.2;
     const NEAR = 0.5;
 
     // Update timer
-    this.creationTimer += globalSpeed * tm;
+    this.creationTimer += pl.speed.z * tm;
 
     // Update curvature
-    this.updateCurvature(globalSpeed, tm);
+    this.updateCurvature(pl.speed.z, tm);
 
     // Update road pieces
     for (let i = 0; i < this.pieces.length; ++i) {
@@ -236,7 +240,7 @@ Road.prototype.update = function (globalSpeed, pl, tm) {
         this.pieces[i].playerCollision(pl);
 
         // Update
-        if (this.pieces[i].update(globalSpeed, NEAR, tm)) {
+        if (this.pieces[i].update(pl.speed.z, NEAR, tm)) {
 
             // Generate decorations, maybe
             this.updateDecGenerator(this.pieces[i].z);
@@ -251,9 +255,9 @@ Road.prototype.update = function (globalSpeed, pl, tm) {
     // Update decorations
     for(let i = 0; i < this.decorations.length; ++ i) {
 
-        this.decorations[i].update(globalSpeed, NEAR, tm);
+        this.decorations[i].playerCollision(pl);
+        this.decorations[i].update(pl.speed.z, NEAR, tm);
     }
-
 }
 
 
