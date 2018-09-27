@@ -390,3 +390,11 @@ Graphics.prototype.setTranslation = function(x, y, z) {
     this.transf.tr.y = y;
     this.transf.tr.z = z;
 }
+
+
+// Set global alpha
+Graphics.prototype.setGlobalAlpha = function(a) {
+
+    if(a == null) a = 1.0;
+    this.ctx.globalAlpha = a;
+}

@@ -22,6 +22,7 @@ let assetInfo = {
         player: "player.png",
         shadow: "shadow.png",
         decorations: "decorations.png",
+        hud: "hud.png",
     }
 };
 

@@ -75,7 +75,7 @@ Decoration.prototype.update = function(speed, near, tm) {
 Decoration.prototype.playerCollision = function(pl) {
 
     const DEPTH = 0.05;
-    const DELTA = 0.05;
+    const DELTA = 0.01;
 
     if(!this.exist) return;
 
