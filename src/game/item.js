@@ -52,6 +52,7 @@ Item.prototype.playerCollision = function (pl) {
 
     const PL_WIDTH = 0.0;
     const DEPTH = 0.2;
+    const FUEL_UP = 0.50;
 
     if(!this.exist) return;
 
@@ -73,6 +74,16 @@ Item.prototype.playerCollision = function (pl) {
             pl.boost();
             break;
 
+        // Heart
+        case 1:
+            pl.addLife();
+            break;
+
+        // Fuel
+        case 2:
+            pl.addFuel(FUEL_UP);
+            break;
+
         default: 
             break;
         }
@@ -83,7 +94,6 @@ Item.prototype.playerCollision = function (pl) {
 // Update
 Item.prototype.update = function (pl, near, tm) {
 
-    const ANIM_SPEED = 6;
     const WAVE_SPEED = 0.1;
 
     if (!this.exist) {
@@ -114,7 +124,9 @@ Item.prototype.update = function (pl, near, tm) {
     }
 
     // Animate
-    this.spr.animate(this.id*2, 0, 4, ANIM_SPEED, tm);
+    const ANIM_LENGTH = [4, 5, 7];
+    const ANIM_SPEED = [8, 6, 10];
+    this.spr.animate(this.id*2, 0, ANIM_LENGTH[this.id], ANIM_SPEED[this.id], tm);
 
     // Update wave
     this.wave += WAVE_SPEED * tm;
@@ -129,7 +141,7 @@ Item.prototype.draw = function (g, a) {
 
     const SHADOW_WIDTH = 0.5;
     const SHADOW_HEIGHT = 0.30;
-    const AMPLITUDE = 0.025;
+    const AMPLITUDE = 0.05;
     const DEATH_SCALE = 1.25;
 
     let scale = 1.0;
@@ -156,7 +168,8 @@ Item.prototype.draw = function (g, a) {
         this.pos.z - this.h * (scale-1),
         this.w*scale, this.h*scale,
         12,
-        Flip.None);
+        Flip.None,
+        !this.dying);
 
     if(this.dying) {
 

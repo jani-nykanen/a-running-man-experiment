@@ -233,7 +233,7 @@ Road.prototype.update = function (pl, tm) {
     const NEAR = 0.5;
 
     // Update items
-    this.items.update(pl, NEAR, this.oldX, this.startPos, this.roadWidth, tm);
+    this.items.update(pl, NEAR, tm);
 
     // Update decorations
     for(let i = 0; i < this.decorations.length; ++ i) {
@@ -257,13 +257,18 @@ Road.prototype.update = function (pl, tm) {
         // Update
         if (this.pieces[i].update(pl.speed.z, NEAR, tm)) {
 
-            // Generate decorations, maybe
-            this.updateDecGenerator(this.pieces[i].z);
+            let z = this.pieces[i].z;
 
             // Create a new road piece
             this.createNewRoadPiece(
                 this.curvature * CURVATURE_FACTOR,
                 this.pieces[i].z);
+
+            // Generate decorations, maybe
+            this.updateDecGenerator(z);
+
+            // Update item generator
+            this.items.updateTimer(this.oldX, z + this.startPos, this.roadWidth);
         }
     }
 }

@@ -9,7 +9,7 @@
 var ItemGen = function() {
 
     const ITEM_MAX = 32;
-    const INITIAL_ITEM_TIME = 60.0;
+    const INITIAL_ITEM_TIME = 10.0;
 
     // Item array
     this.items = new Array(ITEM_MAX);
@@ -38,27 +38,29 @@ ItemGen.prototype.createItem = function(x, y, z) {
     }
 
     // Create
-    this.items[index].createSelf(x, y, z, 0);
+    this.items[index].createSelf(x, y, z, (Math.random()*3)|0);
 }
 
 
-// Update
-ItemGen.prototype.update = function(pl, near, x, z, w, tm) {
+// Update timer
+ItemGen.prototype.updateTimer = function(x, z, w) {
 
-    const ITEM_INTERVAL = 60.0;
-    const ITEM_Y = -0.15;
+    const ITEM_INTERVAL = 6;
+    const ITEM_Y = -0.10;
     const VARIATION_MOD = 0.5;
+
     let variation = w / 2 * VARIATION_MOD;
 
-    let speed = pl.speed.z / 0.060;
-
-    // Update generator
-    this.itemTimer -= speed * tm;
-    if(this.itemTimer <= 0.0) {
+    if(-- this.itemTimer <= 0) {
 
         this.createItem(x + (Math.random()*2-1)*variation, ITEM_Y, z)
         this.itemTimer += ITEM_INTERVAL;
     }
+}
+
+
+// Update
+ItemGen.prototype.update = function(pl, near, tm) {
 
     // Update items
     for(let i = 0; i < this.items.length; ++ i) {

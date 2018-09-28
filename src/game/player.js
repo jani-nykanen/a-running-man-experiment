@@ -40,6 +40,8 @@ var Player = function (z) {
 
     // Fuel
     this.fuel = 1.0;
+    // Lives
+    this.lives = 1;
 
     // Flash timer
     this.flashTimer = 0.0;
@@ -405,4 +407,23 @@ Player.prototype.boost = function() {
 
     if(this.target.z > this.speed.z)
         this.speed.z = this.target.z;
+}
+
+
+// Add fuel
+Player.prototype.addFuel = function(amount) {
+
+    this.fuel += amount;
+    if(this.fuel > 1.0)
+        this.fuel = 1.0;
+}
+
+
+// Add a life
+Player.prototype.addLife = function() {
+
+    const MAX = 3;
+
+    if(this.lives < MAX)
+        ++ this.lives;
 }

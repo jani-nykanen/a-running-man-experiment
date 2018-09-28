@@ -69,9 +69,11 @@ HUD.prototype.drawTimeAndDistance = function(g, a) {
 // Draw lives
 HUD.prototype.drawLives = function(g, a) {
 
-    for(let i = 0; i < this.lives; ++ i) {
+    for(let i = 0; i < 3; ++ i) {
 
-        g.drawBitmapRegion(a.bitmaps.hud, 0, 0, 16, 16, 
+        g.drawBitmapRegion(a.bitmaps.hud, 
+            (i+1 > this.lives) * 16, 0, 
+            16, 16, 
             1+i*16, 128-17);
     }
 }
@@ -98,7 +100,7 @@ HUD.prototype.drawFuel = function(g, a) {
 HUD.prototype.update = function(pl, tm) {
 
     const METRE = 3.0;
-    const FUEL_DELTA_SPEED = 0.0025;
+    const FUEL_DELTA_SPEED = 0.005;
 
     // Update distances
     this.dist += pl.speed.z * METRE * tm;
@@ -121,6 +123,9 @@ HUD.prototype.update = function(pl, tm) {
         if(this.fuel > fuel)
             this.fuel = fuel;
     }
+
+    // Set lives
+    this.lives = pl.lives;
 }
 
 
