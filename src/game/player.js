@@ -38,6 +38,9 @@ var Player = function (z) {
     // Animation row
     this.animRow = 0;
 
+    // Fuel
+    this.fuel = 1.0;
+
     // Sprite
     this.spr = new Sprite(24, 24);
 }
@@ -82,6 +85,11 @@ Player.prototype.control = function (vpad, tm) {
     const ROLL_JUMP_HEIGHT = 0.0525;
     const ROLL_JUMP_BONUS = 1.15;
 
+    const JUMP_FUEL = 0.05;
+    const DJUMP_FUEL = 0.035;
+    const ROLL_JUMP_FUEL = 0.035;
+    const ROLL_FUEL = 0.05;
+
     // Default
     this.target.x = 0.0;
     this.target.z = 0.0;
@@ -125,6 +133,7 @@ Player.prototype.control = function (vpad, tm) {
         if (this.canJump) {
 
             let height = JUMP_HEIGHT;
+            // Roll jump
             if (this.rolling) {
 
                 this.doubleJump = true;
@@ -134,14 +143,24 @@ Player.prototype.control = function (vpad, tm) {
 
                 this.speed.z *= ROLL_JUMP_BONUS;
                 this.speed.x *= ROLL_JUMP_BONUS;
+
+                this.fuel -= ROLL_JUMP_FUEL;
+            }
+            // Default jump
+            else {
+
+                this.fuel -= JUMP_FUEL;
             }
 
             this.speed.y = -height;
         }
+        // Double jump
         else if (!this.doubleJump) {
 
             this.speed.y = -DOUBLE_JUMP_HEIGHT;
             this.doubleJump = true;
+
+            this.fuel -= DJUMP_FUEL;
         }
     }
     else if (this.speed.y < 0.0 && !this.canJump && f1 == State.Released) {
@@ -158,6 +177,8 @@ Player.prototype.control = function (vpad, tm) {
 
         this.speed.x = Math.abs(this.speed.x) * vpad.stick.x * ROLL_BONUS;
         this.speed.z *= ROLL_BONUS;
+
+        this.fuel -= ROLL_FUEL;
     }
     else if (this.rolling && this.rollTimer > 0.0 && f2 == State.Released) {
 
@@ -186,6 +207,7 @@ Player.prototype.move = function (tm) {
     const ACC_OFF_ROAD = 0.0020;
     const GRAVITY_ACC = 0.002;
     const SLOW_MODIF = 0.80;
+    const FUEL_FACTOR = 0.005;
 
     // Calculate Z acceleration
     let accl = 0;
@@ -207,6 +229,12 @@ Player.prototype.move = function (tm) {
     // Update position
     this.pos.x += this.speed.x * tm;
     this.pos.y += this.speed.y * tm;
+
+    // Update fuel (when on ground)
+    if(this.canJump) {
+
+        this.fuel -= this.speed.z * FUEL_FACTOR * tm;
+    }
 
     // Floor collision
     this.canJump = false;

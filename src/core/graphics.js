@@ -327,7 +327,7 @@ Graphics.prototype.drawFloorRect = function (x1, x2, y, z, width, depth, outline
 }
 
 
-// Draw flat object in 3D space
+// Draw a flat object in 3D space
 Graphics.prototype.drawFlat3D = function(bmp, sx, sy, sw, sh, x, y, z, w, h, yoff, flip, borders) {
 
     let hoff = h * (yoff / bmp.height);
@@ -344,13 +344,14 @@ Graphics.prototype.drawFlat3D = function(bmp, sx, sy, sw, sh, x, y, z, w, h, yof
     // Draw black outlines
     if(borders) {
 
+        let hjump = bmp.width / 2;
         for(let px = -1; px <= 1; ++ px) {
 
             for(let py = -1; py <= 1; ++ py) {
 
                 if( (Math.abs(px)) != (Math.abs(py)) ) {
 
-                    this.drawScaledBitmapRegion(bmp, sx+sw, sy, sw, sh, 
+                    this.drawScaledBitmapRegion(bmp, sx+hjump, sy, sw, sh, 
                         dx+px, dy+py, dw, dh, flip);
                 }
             }

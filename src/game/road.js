@@ -34,6 +34,9 @@ var Road = function () {
         this.decorations[i] = new Decoration();
     }
 
+    // Item generator
+    this.items = new ItemGen();
+
     // Creation timer
     this.creationTimer = ROAD_STEP;
     // Timer max
@@ -43,6 +46,8 @@ var Road = function () {
     // Creation positions
     this.oldX = 0.0;
     this.creationX = 0.0;
+    // Road width
+    this.roadWidth = ROAD_WIDTH;
 
     // Curvature delta speed
     this.curvDelta = 0.0;
@@ -227,8 +232,11 @@ Road.prototype.update = function (pl, tm) {
     const CURVATURE_FACTOR = 0.2;
     const NEAR = 0.5;
 
-     // Update decorations
-     for(let i = 0; i < this.decorations.length; ++ i) {
+    // Update items
+    this.items.update(pl, NEAR, this.oldX, this.startPos, this.roadWidth, tm);
+
+    // Update decorations
+    for(let i = 0; i < this.decorations.length; ++ i) {
 
         this.decorations[i].playerCollision(pl);
         this.decorations[i].update(pl.speed.z, NEAR, tm);
@@ -289,4 +297,7 @@ Road.prototype.drawDecorations = function(obuf) {
             obuf.addObject(this.decorations[i]);
         }
     }
+
+    // Draw items
+    this.items.draw(obuf);
 }

@@ -23,6 +23,7 @@ let assetInfo = {
         shadow: "shadow.png",
         decorations: "decorations.png",
         hud: "hud.png",
+        items: "items.png",
     }
 };
 

@@ -49,7 +49,7 @@ Decoration.prototype.createSelf = function(x, y, z, id) {
     // Height (for collision)
     this.heights = [
         1.5, 1.5, 1.5,
-        0.33, 0.5, 1.5,
+        0.33, 0.36, 1.5,
         1.5, 1.5, 1.5,
     ];
 }

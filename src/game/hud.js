@@ -88,8 +88,9 @@ HUD.prototype.drawFuel = function(g, a) {
 
     // Draw bar
     let t = this.fuel * 47;
-    g.drawBitmapRegion(a.bitmaps.hud, 0, 48, (t | 0) +1, 16, 128-62, 128-18);
-    g.drawBitmapRegion(a.bitmaps.hud, 0, 16, t | 0, 16, 128-62, 128-18);
+    let p = 48 +  ((3.0 - (this.fuel / 0.33333) | 0 ) * 16 );
+    g.drawBitmapRegion(a.bitmaps.hud, 0, 16, (t | 0) +1, 16, 128-62, 128-18);
+    g.drawBitmapRegion(a.bitmaps.hud, 0, p, t | 0, 16, 128-62, 128-18);
 }
 
 
@@ -97,7 +98,7 @@ HUD.prototype.drawFuel = function(g, a) {
 HUD.prototype.update = function(pl, tm) {
 
     const METRE = 3.0;
-    const FUEL_PER_METRE = 0.015;
+    const FUEL_DELTA_SPEED = 0.0025;
 
     // Update distances
     this.dist += pl.speed.z * METRE * tm;
@@ -107,7 +108,19 @@ HUD.prototype.update = function(pl, tm) {
     this.time -= 1.0 * tm;
 
     // Update fuel
-    this.fuel -= (pl.speed.z / METRE) * FUEL_PER_METRE * tm;
+    let fuel = pl.fuel;
+    if(fuel < this.fuel) {
+
+        this.fuel -= FUEL_DELTA_SPEED * tm;
+        if(this.fuel < fuel)
+            this.fuel = fuel;
+    }
+    else if(fuel > this.fuel) {
+
+        this.fuel += FUEL_DELTA_SPEED * tm;
+        if(this.fuel > fuel)
+            this.fuel = fuel;
+    }
 }
 
 
