@@ -41,6 +41,9 @@ var Player = function (z) {
     // Fuel
     this.fuel = 1.0;
 
+    // Flash timer
+    this.flashTimer = 0.0;
+
     // Sprite
     this.spr = new Sprite(24, 24);
 }
@@ -89,6 +92,8 @@ Player.prototype.control = function (vpad, tm) {
     const DJUMP_FUEL = 0.035;
     const ROLL_JUMP_FUEL = 0.035;
     const ROLL_FUEL = 0.05;
+
+    const BOOST_MOD = 1.5;
 
     // Default
     this.target.x = 0.0;
@@ -184,6 +189,13 @@ Player.prototype.control = function (vpad, tm) {
 
         this.rollTimer = 0.0;
     }
+
+    // Boost
+    if(this.flashTimer > 0.0) {
+
+        this.target.x *= BOOST_MOD;
+        this.target.z *= BOOST_MOD;
+    }
 }
 
 
@@ -207,22 +219,25 @@ Player.prototype.move = function (tm) {
     const ACC_OFF_ROAD = 0.0020;
     const GRAVITY_ACC = 0.002;
     const SLOW_MODIF = 0.80;
-    const FUEL_FACTOR = 0.005;
+    const FUEL_FACTOR = 0.00025;
+    const BOOST_MOD = 1.5;
+    const FUEL_DELTA = 0.001;
+
+    let m = this.flashTimer > 0.0 ? BOOST_MOD : 1.0;
 
     // Calculate Z acceleration
     let accl = 0;
     if (this.touchRoad)
         accl = ACCELERATION_Z - (ACCELERATION_Z * SLOW_MODIF) *
-            Math.min(1.0, Math.pow(this.speed.z / this.speedLimit.z, 2));
+            Math.min(1.0, Math.pow( (this.speed.z/m) / this.speedLimit.z, 2));
     else
         accl = ACC_OFF_ROAD;
-
 
     // Update speeds
     this.speed.x = this.updateSpeed(
         this.speed.x, this.target.x, ACCELERATION_X, tm);
     this.speed.z = this.updateSpeed(
-        this.speed.z, this.target.z, accl, tm);
+        this.speed.z, this.target.z, accl * m, tm);
     this.speed.y = this.updateSpeed(
         this.speed.y, this.target.y, GRAVITY_ACC, tm);
 
@@ -231,9 +246,9 @@ Player.prototype.move = function (tm) {
     this.pos.y += this.speed.y * tm;
 
     // Update fuel (when on ground)
-    if(this.canJump) {
+    if(this.canJump && this.speed.z > FUEL_DELTA) {
 
-        this.fuel -= this.speed.z * FUEL_FACTOR * tm;
+        this.fuel -= FUEL_FACTOR * tm;
     }
 
     // Floor collision
@@ -334,6 +349,12 @@ Player.prototype.updateCamera = function (cam, tm) {
 // Update
 Player.prototype.update = function (vpad, camX, tm) {
 
+    // Update flash timer
+    if(this.flashTimer > 0.0) {
+
+        this.flashTimer -= 1.0 * tm;
+    }
+
     // Control
     this.control(vpad, tm);
     // Move
@@ -365,5 +386,23 @@ Player.prototype.draw = function (g, a) {
     let yplus = this.rolling ? 2 : 0;
 
     // Draw sprite
+    let r = this.spr.row;
+    if(this.flashTimer > 0.0 && Math.floor(this.flashTimer/2) % 2 == 0) {
+
+        this.spr.row += 2;
+    }
     this.spr.draw(g, a.bitmaps.player, p.x - 12, p.y - 20 + yplus, this.flip);
+    this.spr.row = r;
+}
+
+
+// Speed boost
+Player.prototype.boost = function() {
+
+    const FLASH_TIME = 30.0;
+
+    this.flashTimer += FLASH_TIME;
+
+    if(this.target.z > this.speed.z)
+        this.speed.z = this.target.z;
 }

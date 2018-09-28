@@ -30,7 +30,7 @@ ItemGen.prototype.createItem = function(x, y, z) {
     let index = 0;
     for(let i = 0; i < this.items.length; ++ i) {
 
-        if(!this.items[i].exist) {
+        if(!this.items[i].exist && !this.items[i].dying) {
 
             index = i;
             break;
@@ -46,7 +46,9 @@ ItemGen.prototype.createItem = function(x, y, z) {
 ItemGen.prototype.update = function(pl, near, x, z, w, tm) {
 
     const ITEM_INTERVAL = 60.0;
-    const ITEM_Y = -0.225;
+    const ITEM_Y = -0.15;
+    const VARIATION_MOD = 0.5;
+    let variation = w / 2 * VARIATION_MOD;
 
     let speed = pl.speed.z / 0.060;
 
@@ -54,7 +56,7 @@ ItemGen.prototype.update = function(pl, near, x, z, w, tm) {
     this.itemTimer -= speed * tm;
     if(this.itemTimer <= 0.0) {
 
-        this.createItem(x, ITEM_Y, z)
+        this.createItem(x + (Math.random()*2-1)*variation, ITEM_Y, z)
         this.itemTimer += ITEM_INTERVAL;
     }
 

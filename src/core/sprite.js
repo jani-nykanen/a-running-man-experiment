@@ -81,9 +81,9 @@ Sprite.prototype.draw = function (g, bmp, dx, dy, flip) {
 
 
 // Draw to 3D space
-Sprite.prototype.draw3D = function(g, bmp, x, y, z, w, h, flip) {
+Sprite.prototype.draw3D = function(g, bmp, x, y, z, w, h, yoff, flip) {
 
     g.drawFlat3D(bmp, this.width * this.frame,
         this.height * this.row, this.width, this.height,
-        x, y, z, w, h, 12, flip, true);
+        x, y, z, w, h, yoff, flip, true);
 }
