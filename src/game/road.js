@@ -268,7 +268,7 @@ Road.prototype.update = function (pl, tm) {
             this.updateDecGenerator(z);
 
             // Update item generator
-            this.items.updateTimer(this.oldX, z + this.startPos, this.roadWidth);
+            this.items.updateTimer(this.oldX, z + this.startPos, this.roadWidth, pl);
         }
     }
 }

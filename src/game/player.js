@@ -4,6 +4,9 @@
  * @author Jani Nykänen
  */
 
+// Global constants
+let BOOST_MOD = 1.5;
+
 
 // Constructor
 var Player = function (z) {
@@ -11,6 +14,7 @@ var Player = function (z) {
     const LIMIT_X = 0.010;
     const LIMIT_Z = 0.065;
     const LIMIT_OFF_ROAD = 0.020;
+    const MAX_LIVES = 3;
 
     // Position
     this.pos = { x: 0.00001, y: 0, z: z };
@@ -42,6 +46,8 @@ var Player = function (z) {
     this.fuel = 1.0;
     // Lives
     this.lives = 1;
+    // Maximum lives
+    this.maxLives = MAX_LIVES;
 
     // Flash timer
     this.flashTimer = 0.0;
@@ -94,8 +100,6 @@ Player.prototype.control = function (vpad, tm) {
     const DJUMP_FUEL = 0.035;
     const ROLL_JUMP_FUEL = 0.035;
     const ROLL_FUEL = 0.05;
-
-    const BOOST_MOD = 1.5;
 
     // Default
     this.target.x = 0.0;
@@ -221,8 +225,7 @@ Player.prototype.move = function (tm) {
     const ACC_OFF_ROAD = 0.0020;
     const GRAVITY_ACC = 0.002;
     const SLOW_MODIF = 0.80;
-    const FUEL_FACTOR = 0.00025;
-    const BOOST_MOD = 1.5;
+    const FUEL_FACTOR = 0.00035;
     const FUEL_DELTA = 0.001;
 
     let m = this.flashTimer > 0.0 ? BOOST_MOD : 1.0;

@@ -19,7 +19,11 @@ var Game = function (app) {
 
     // Create game objects
     this.player = new Player(1.25);
+    this.checkpoint = new Checkpoint();
     this.obuf = new ObjectBuffer(OBUF_SIZE);
+
+    // Set checkpoint
+    this.checkpoint.createSelf(0.0, 0.0, 8.0);
 
     // Camera X
     this.camX = 0.0;
@@ -30,6 +34,9 @@ Game.prototype = Object.create(Scene.prototype);
 // Update function
 Game.prototype.update = function (tm) {
 
+    const NEAR = 0.5;
+    const FAR = 8.0;
+
     // Update player & camera
     this.camX = this.player.update(this.vpad, this.camX, tm);
 
@@ -38,6 +45,9 @@ Game.prototype.update = function (tm) {
 
     // Update background
     this.bg.update(this.player.speed.z, tm);
+
+    // Update checkpoint
+    this.checkpoint.update(this.player, NEAR, FAR, tm);
 
     // Update HUD
     this.hud.update(this.player, tm);
@@ -67,6 +77,10 @@ Game.prototype.draw = function (g) {
 
     // Push player to the buffer
     this.obuf.addObject(this.player);
+
+    // Push checkpoint to the buffer
+    if(this.checkpoint.drawSelf)
+        this.obuf.addObject(this.checkpoint);
 
     // Draw buffer
     this.obuf.sortByDepth();
