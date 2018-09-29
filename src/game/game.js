@@ -10,6 +10,14 @@ var Game = function (app) {
 
     Scene.call(this, [app, "game"]);
 
+    this.reset();
+}
+Game.prototype = Object.create(Scene.prototype);
+
+
+// Reset
+Game.prototype.reset = function() {
+
     const OBUF_SIZE = 64;
     const CHECKPOINT_INTERVAL = 16.667 * 2 * 5;
 
@@ -17,6 +25,7 @@ var Game = function (app) {
     this.bg = new Background();
     this.road = new Road();
     this.hud = new HUD();
+    this.pause = new Pause();
 
     // Create game objects
     this.player = new Player(1.25);
@@ -31,7 +40,6 @@ var Game = function (app) {
     // Camera X
     this.camX = 0.0;
 }
-Game.prototype = Object.create(Scene.prototype);
 
 
 // Update function
@@ -39,6 +47,18 @@ Game.prototype.update = function (tm) {
 
     const NEAR = 0.5;
     const FAR = 8.0;
+
+    // Check pause
+    if(this.pause.active) {
+
+        this.pause.update(this.vpad, this);
+        return;
+    }
+    else if(this.vpad.buttons.confirm == State.Pressed) {
+
+        this.pause.active = true;
+        return;
+    }
 
     // Update player & camera
     this.camX = this.player.update(this.vpad, this.camX, tm);
@@ -94,4 +114,7 @@ Game.prototype.draw = function (g) {
 
     // Draw possible checkpoint message
     this.checkpoint.drawMessage(g, this.assets);
+
+    // Draw pause box
+    this.pause.draw(g, this.assets);
 }

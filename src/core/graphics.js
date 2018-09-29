@@ -232,7 +232,11 @@ Graphics.prototype.drawText = function (bmp, text, dx, dy, xoff, yoff, center) {
 // Set global color for primitive rendering (here rectangles)
 Graphics.prototype.setGlobalColor = function (r, g, b, a) {
 
+    if(r == null)
+        this.setGlobalColor(255, 255, 255);
+
     let c = this.ctx;
+    a = a || 1.0;
 
     this.globalColor = getColorString(r, g, b, a);
     c.fillStyle = this.globalColor;

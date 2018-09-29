@@ -20,7 +20,8 @@ var ItemGen = function() {
     const INITIAL_ITEM_TIME = 10.0;
 
     // Item array
-    this.items = new Array(ITEM_MAX);
+    if(this.items == null)
+        this.items = new Array(ITEM_MAX);
     for(let i = 0; i < this.items.length; ++ i) {
 
         this.items[i] = new Item();

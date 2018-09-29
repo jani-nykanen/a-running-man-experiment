@@ -15,7 +15,8 @@ var Road = function () {
     const DEC_COUNT = 32;
 
     // Road pieces
-    this.pieces = new Array(ROAD_COUNT);
+    if(this.pieces == null)
+        this.pieces = new Array(ROAD_COUNT);
     // Create default road
     for (let i = 0; i < this.pieces.length; ++i) {
 
@@ -27,7 +28,8 @@ var Road = function () {
     }
 
     // Decorations
-    this.decorations = new Array(DEC_COUNT);
+    if(this.decorations == null)
+        this.decorations = new Array(DEC_COUNT);
     // Make sure they don't exist
     for(let i = 0; i < this.decorations.length; ++ i) {
 
