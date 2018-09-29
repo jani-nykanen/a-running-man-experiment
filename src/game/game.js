@@ -11,6 +11,7 @@ var Game = function (app) {
     Scene.call(this, [app, "game"]);
 
     const OBUF_SIZE = 64;
+    const CHECKPOINT_INTERVAL = 16.667 * 2 * 5;
 
     // Create components
     this.bg = new Background();
@@ -23,7 +24,9 @@ var Game = function (app) {
     this.obuf = new ObjectBuffer(OBUF_SIZE);
 
     // Set checkpoint
-    this.checkpoint.createSelf(0.0, 0.0, 8.0);
+    this.checkpoint.createSelf(0.0, 0.0, 
+        CHECKPOINT_INTERVAL);
+    this.checkpoint.pos.z += this.player.pos.z;
 
     // Camera X
     this.camX = 0.0;
@@ -41,16 +44,16 @@ Game.prototype.update = function (tm) {
     this.camX = this.player.update(this.vpad, this.camX, tm);
 
     // Update road
-    this.road.update(this.player, tm);
+    this.road.update(this.player, this.checkpoint, tm);
 
     // Update background
     this.bg.update(this.player.speed.z, tm);
 
     // Update checkpoint
-    this.checkpoint.update(this.player, NEAR, FAR, tm);
+    this.checkpoint.update(this.player, this.hud, NEAR, FAR, tm);
 
     // Update HUD
-    this.hud.update(this.player, tm);
+    this.hud.update(this.player, this.checkpoint, tm);
 
 }
 
@@ -79,7 +82,7 @@ Game.prototype.draw = function (g) {
     this.obuf.addObject(this.player);
 
     // Push checkpoint to the buffer
-    if(this.checkpoint.drawSelf)
+    if(this.checkpoint.ready)
         this.obuf.addObject(this.checkpoint);
 
     // Draw buffer
@@ -88,4 +91,7 @@ Game.prototype.draw = function (g) {
 
     // Draw HUD
     this.hud.draw(g, this.assets);
+
+    // Draw possible checkpoint message
+    this.checkpoint.drawMessage(g, this.assets);
 }

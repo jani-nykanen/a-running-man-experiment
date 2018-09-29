@@ -227,10 +227,11 @@ Road.prototype.updateDecGenerator = function(z) {
 
 
 // Update
-Road.prototype.update = function (pl, tm) {
+Road.prototype.update = function (pl, checkpoint, tm) {
 
     const CURVATURE_FACTOR = 0.2;
     const NEAR = 0.5;
+    const CORRECTION = 0.2;
 
     // Update items
     this.items.update(pl, NEAR, tm);
@@ -263,6 +264,12 @@ Road.prototype.update = function (pl, tm) {
             this.createNewRoadPiece(
                 this.curvature * CURVATURE_FACTOR,
                 this.pieces[i].z);
+
+            // Fix checkpoint position
+            if(checkpoint.pos.z >=  z + this.startPos) {
+
+                checkpoint.pos.x = this.oldX - this.curvature * CORRECTION;
+            }
 
             // Generate decorations, maybe
             this.updateDecGenerator(z);

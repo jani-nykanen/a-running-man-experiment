@@ -97,14 +97,14 @@ HUD.prototype.drawFuel = function(g, a) {
 
 
 // Update
-HUD.prototype.update = function(pl, tm) {
+HUD.prototype.update = function(pl, checkpoint, tm) {
 
     const METRE = 3.0;
     const FUEL_DELTA_SPEED = 0.005;
 
     // Update distances
     this.dist += pl.speed.z * METRE * tm;
-    this.checkpointDist -= pl.speed.z * METRE * tm;
+    this.checkpointDist = checkpoint.getDistance(pl) * METRE / 2.0 * tm;
 
     // Update time
     this.time -= 1.0 * tm;
@@ -140,4 +140,13 @@ HUD.prototype.draw = function(g, a) {
 
     // Draw fuel
     this.drawFuel(g, a);
+}
+
+
+// Add time
+HUD.prototype.addTime = function(sec) {
+
+    this.time += sec * 60.0;
+    if(this.time > 99.0 * 60)
+        this.time = 99.0 * 60;
 }
