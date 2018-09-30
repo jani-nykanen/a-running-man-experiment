@@ -8,10 +8,16 @@
 // Constructor
 var Enemy = function () {
 
+    const BASE_ACC_X = 0.0020;
+    const BASE_ACC_Y = 0.0020;
+    const BASE_ACC_Z = 0.0020;
+
     // Position & speed
     this.pos = { x: 0, y: 0, z: 0 };
     this.speed = { x: 0, y: 0, z: 0 };
     this.target = { x: 0, y: 0, z: 0 };
+    // Acceleration
+    this.acc = {x: BASE_ACC_X, y: BASE_ACC_Y, z: BASE_ACC_Z};
 
     // Sprite
     this.spr = new Sprite(32, 32);
@@ -47,13 +53,47 @@ Enemy.prototype.createSelf = function(x, y, z) {
 }
 
 
+// Update speed
+Enemy.prototype.updateSpeed = function (speed, target, acc, tm) {
+
+    if (speed < target) {
+
+        speed += acc * tm;
+        if (speed > target) {
+
+            speed = target;
+        }
+    }
+    else if (speed > target) {
+
+        speed -= acc * tm;
+        if (speed < target) {
+
+            speed = target;
+        }
+    }
+
+    return speed;
+}
+
+
 // Update
 Enemy.prototype.update = function(pl, near, tm) {
 
     if(!this.exist) return;
 
-    // Base movement
+    // Base movement closer to camera
     this.pos.z -= pl.speed.z * tm;
+
+    // Update speeds
+    this.speed.x = this.updateSpeed(this.speed.x, this.target.x, this.acc.x, tm);
+    this.speed.y = this.updateSpeed(this.speed.y, this.target.y, this.acc.y, tm);
+    this.speed.z = this.updateSpeed(this.speed.z, this.target.z, this.acc.z, tm);
+
+    // Move
+    this.pos.x += this.speed.x * tm;
+    this.pos.y += this.speed.y * tm;
+    this.pos.z += this.speed.z * tm;
 
     // Check if too close
     if(this.pos.z < near) {
@@ -65,7 +105,7 @@ Enemy.prototype.update = function(pl, near, tm) {
     // Call custom update function
     if(this.onUpdate != null) {
 
-        this.onUpdate(pl, near, tm);
+        this.onUpdate(pl, tm);
     }
 
     // Call custom animation function
