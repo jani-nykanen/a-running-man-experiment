@@ -10,7 +10,11 @@ var Game = function (app) {
 
     Scene.call(this, [app, "game"]);
 
+    // (Re)set content
     this.reset();
+
+    // Set fading
+    this.global.trans.activate(2.0, Mode.Out, null);
 }
 Game.prototype = Object.create(Scene.prototype);
 
@@ -39,6 +43,9 @@ Game.prototype.reset = function() {
 
     // Camera X
     this.camX = 0.0;
+
+    // Update once
+    this.updatedOnce = false;
 }
 
 
@@ -47,6 +54,10 @@ Game.prototype.update = function (tm) {
 
     const NEAR = 0.5;
     const FAR = 8.0;
+
+    // Skip, if fading
+    if(this.global.trans.active && this.updatedOnce) return;
+    this.updatedOnce = true;
 
     // Check pause
     if(this.pause.active) {

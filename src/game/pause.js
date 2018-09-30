@@ -63,7 +63,9 @@ Pause.prototype.buttonEvent = function(game) {
 
         // Restart
         case 1:
-            game.reset();
+            game.global.trans.activate(2.0, Mode.In, function() {
+                game.reset();
+            });
             break;
         // Audio
         case 2:

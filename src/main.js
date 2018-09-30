@@ -45,8 +45,8 @@ function main() {
     (new Application()).run(assetInfo,
         function(app) {
 
-            app.addScene(new Game(app), false, true);
             app.addScene(new Global(app), true);
+            app.addScene(new Game(app), false, true);
         },
         buttonList);
 }
