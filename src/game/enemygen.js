@@ -42,13 +42,31 @@ EnemyGen.prototype.getNextEnemyIndex = function() {
 }
 
 
+// Create an enemy
+EnemyGen.prototype.createEnemy = function(x, y, z) {
+
+    const MAX_ID = 2;
+
+    let i = this.getNextEnemyIndex();
+    let id = (Math.random() * MAX_ID) | 0;
+
+    this.enemies[i] = new ([PassiveSlime, HorizontalSlime][id]) ();
+
+    this.enemies[i].createSelf(x, y, z);
+
+}
+
+
 // Update timer
-EnemyGen.prototype.updateTimer = function() {
+EnemyGen.prototype.updateTimer = function(x, z, w) {
+
+    const WIDTH_MOD = 0.5;
 
     if(-- this.timer <= 0) {
 
         // Create enemy
-        // ...
+        this.createEnemy(x + (Math.random()*2-1) * (w*WIDTH_MOD/2), 
+            0.0, z);
 
         this.timer += ENEMY_INTERVAL + (Math.random()*ENEMY_INTERVAL_VARY) | 0;
     }
@@ -67,11 +85,11 @@ EnemyGen.prototype.update = function(pl, near, tm) {
 
 
 // Draw
-EnemyGen.prototype.draw = function(g, a) {
+EnemyGen.prototype.draw = function(obuf) {
 
     // Draw enemies
     for(let i = 0; i < this.enemies.length; ++ i) {
 
-        this.enemies[i].draw(g, a);
+        obuf.addObject(this.enemies[i]);
     }
 } 

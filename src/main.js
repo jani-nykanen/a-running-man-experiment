@@ -25,6 +25,7 @@ let assetInfo = {
         hud: "hud.png",
         items: "items.png",
         checkpoint: "checkpoint.png",
+        enemies: "enemies.png",
     }
 };
 

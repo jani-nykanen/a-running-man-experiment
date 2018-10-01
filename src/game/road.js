@@ -38,6 +38,8 @@ var Road = function () {
 
     // Item generator
     this.items = new ItemGen();
+    // Enemy generator
+    this.enemies = new EnemyGen();
 
     // Creation timer
     this.creationTimer = ROAD_STEP;
@@ -237,6 +239,8 @@ Road.prototype.update = function (pl, checkpoint, tm) {
 
     // Update items
     this.items.update(pl, NEAR, tm);
+    // Update enemies
+    this.enemies.update(pl, NEAR, tm);
 
     // Update decorations
     for(let i = 0; i < this.decorations.length; ++ i) {
@@ -277,7 +281,12 @@ Road.prototype.update = function (pl, checkpoint, tm) {
             this.updateDecGenerator(z);
 
             // Update item generator
-            this.items.updateTimer(this.oldX, z + this.startPos, this.roadWidth, pl);
+            if(!this.items.updateTimer(
+                this.oldX, z + this.startPos, this.roadWidth, pl)) {
+
+                // Update enemy generator
+                this.enemies.updateTimer(this.oldX, z + this.startPos, this.roadWidth);
+            }
         }
     }
 }
@@ -314,4 +323,7 @@ Road.prototype.drawDecorations = function(obuf) {
 
     // Draw items
     this.items.draw(obuf);
+
+    // Draw enemies
+    this.enemies.draw(obuf);
 }

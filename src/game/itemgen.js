@@ -107,7 +107,10 @@ ItemGen.prototype.updateTimer = function(x, z, w, pl) {
 
         this.createItem(x + (Math.random()*2-1)*variation, ITEM_Y, z, pl)
         this.itemTimer += ITEM_INTERVAL;
+
+        return true;
     }
+    return false;
 }
 
 
@@ -128,7 +131,6 @@ ItemGen.prototype.draw = function(obuf) {
     // Draw items
     for(let i = 0; i < this.items.length; ++ i) {
 
-        // this.items[i].draw(g, a);
         obuf.addObject(this.items[i]);
     }
 }

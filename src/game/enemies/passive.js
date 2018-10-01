@@ -8,9 +8,11 @@
 // Constructor
 var PassiveSlime = function() {
 
-    Enemy.call();
+    Enemy.call(this);
 
     this.id = 0;
+    this.width = 0.75;
+    this.height = 0.75;
 }
 PassiveSlime.prototype = Object.create(Enemy.prototype);
 
@@ -25,7 +27,7 @@ PassiveSlime.prototype.onUpdate = function(pl, tm) {
 // Animate
 PassiveSlime.prototype.animate = function(tm) {
 
-    const ANIM_SPEED = 8;
+    const ANIM_SPEED = 10;
 
     this.spr.animate(this.id, 0, 3, ANIM_SPEED, tm);
 }

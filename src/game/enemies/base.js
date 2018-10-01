@@ -20,7 +20,7 @@ var Enemy = function () {
     this.acc = {x: BASE_ACC_X, y: BASE_ACC_Y, z: BASE_ACC_Z};
 
     // Sprite
-    this.spr = new Sprite(32, 32);
+    this.spr = new Sprite(48, 48);
     this.flip = Flip.None;
 
     // Id
@@ -119,9 +119,15 @@ Enemy.prototype.update = function(pl, near, tm) {
 // Draw
 Enemy.prototype.draw = function(g, a) {
 
-    const YJUMP = 4;
+    const YJUMP = 18;
+    const SHADOW_WIDTH = 1.0;
+    const SHADOW_HEIGHT = 0.60;
 
     if(!this.exist) return;
+
+    // Draw shadow
+    g.drawFlat3D(a.bitmaps.shadow, 0, 24, 24, 24, this.pos.x, 0.0, this.pos.z,
+        SHADOW_WIDTH * this.width, SHADOW_HEIGHT*this.height, 12, Flip.None);
 
     // Draw sprite
     this.spr.draw3D(g, a.bitmaps.enemies, this.pos.x, this.pos.y, this.pos.z,
