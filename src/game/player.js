@@ -51,6 +51,8 @@ var Player = function (z) {
 
     // Flash timer
     this.flashTimer = 0.0;
+    // Hurt timer
+    this.hurtTimer = 0.0;
 
     // Sprite
     this.spr = new Sprite(24, 24);
@@ -360,6 +362,12 @@ Player.prototype.update = function (vpad, camX, tm) {
         this.flashTimer -= 1.0 * tm;
     }
 
+    // Update hurt timer
+    if(this.hurtTimer > 0.0) {
+
+        this.hurtTimer -= 1.0 * tm;
+    }
+
     // Control
     this.control(vpad, tm);
     // Move
@@ -392,7 +400,13 @@ Player.prototype.draw = function (g, a) {
 
     // Draw sprite
     let r = this.spr.row;
-    if(this.flashTimer > 0.0 && Math.floor(this.flashTimer/2) % 2 == 0) {
+    if(this.hurtTimer > 0.0 
+        && Math.floor(this.hurtTimer/2) % 2 == 0) {
+
+        this.spr.row += 4;
+    }
+    else if(this.flashTimer > 0.0 
+        && Math.floor(this.flashTimer/2) % 2 == 0) {
 
         this.spr.row += 2;
     }

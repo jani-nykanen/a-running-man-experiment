@@ -9,7 +9,7 @@
 var Enemy = function () {
 
     const BASE_ACC_X = 0.0020;
-    const BASE_ACC_Y = 0.0020;
+    const BASE_ACC_Y = 0.0025;
     const BASE_ACC_Z = 0.0020;
 
     // Position & speed
@@ -44,10 +44,6 @@ Enemy.prototype.createSelf = function(x, y, z) {
     this.speed.x = 0.0;
     this.speed.y = 0.0;
     this.speed.z = 0.0;
-
-    this.target.x = 0.0;
-    this.target.y = 0.0;
-    this.target.z = 0.0;
 
     this.exist = true;
 }
@@ -125,9 +121,14 @@ Enemy.prototype.draw = function(g, a) {
 
     if(!this.exist) return;
 
+    // Shadow size
+    let shadowSize = 1.0 + this.pos.y / 2.0;
+    if(shadowSize < 0.0) shadowSize = 0.0;
+
     // Draw shadow
     g.drawFlat3D(a.bitmaps.shadow, 0, 24, 24, 24, this.pos.x, 0.0, this.pos.z,
-        SHADOW_WIDTH * this.width, SHADOW_HEIGHT*this.height, 12, Flip.None);
+        SHADOW_WIDTH * shadowSize* this.width, 
+        SHADOW_HEIGHT * shadowSize * this.height, 12, Flip.None);
 
     // Draw sprite
     this.spr.draw3D(g, a.bitmaps.enemies, this.pos.x, this.pos.y, this.pos.z,

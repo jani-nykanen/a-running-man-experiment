@@ -5,10 +5,11 @@
  */
 
 // Global contants
-let ENEMY_INTERVAL = 10;
-let ENEMY_INTERVAL_VARY = 2;
+let ENEMY_INTERVAL = 7;
+let ENEMY_INTERVAL_VARY = 3;
 let ENEMY_TIME_INITIAL = 15;
-
+let ENEMY_SKIP_PROB_MIN = 2;
+let ENEMY_SKIP_PROB_MAX = 6;
 
 // Constructor
 var EnemyGen = function() {
@@ -25,6 +26,9 @@ var EnemyGen = function() {
 
     // Timer
     this.timer = ENEMY_TIME_INITIAL;    
+
+    // Skip probability
+    this.skipProb = ENEMY_SKIP_PROB_MIN;
 }
 
 
@@ -43,14 +47,33 @@ EnemyGen.prototype.getNextEnemyIndex = function() {
 
 
 // Create an enemy
-EnemyGen.prototype.createEnemy = function(x, y, z) {
+EnemyGen.prototype.createEnemy = function(x, y, z, middle, w) {
 
-    const MAX_ID = 2;
+    const MAX_ID = 3;
+
+    // Check if skip
+    if(Math.random() <= 1.0 / this.skipProb) {
+
+        if(this.skipProb < ENEMY_SKIP_PROB_MAX)
+            ++ this.skipProb;
+
+        return;
+    }
+    else {
+
+        -- this.skipProb ;
+        if(this.skipProb < ENEMY_SKIP_PROB_MIN)
+            this.skipProb = ENEMY_SKIP_PROB_MIN;
+    }
 
     let i = this.getNextEnemyIndex();
     let id = (Math.random() * MAX_ID) | 0;
 
-    this.enemies[i] = new ([PassiveSlime, HorizontalSlime][id]) ();
+    // Determine parameters
+    let params = [ null, [x - w/2, x + w/2], null ];
+
+    // Create enemy
+    this.enemies[i] = new ([PassiveSlime, HorizontalSlime, JumpingSlime][id]) (params[id]);
 
     this.enemies[i].createSelf(x, y, z);
 
@@ -60,13 +83,13 @@ EnemyGen.prototype.createEnemy = function(x, y, z) {
 // Update timer
 EnemyGen.prototype.updateTimer = function(x, z, w) {
 
-    const WIDTH_MOD = 0.5;
+    const WIDTH_MOD = 0.625;
 
     if(-- this.timer <= 0) {
 
         // Create enemy
         this.createEnemy(x + (Math.random()*2-1) * (w*WIDTH_MOD/2), 
-            0.0, z);
+            0.0, z, x, w);
 
         this.timer += ENEMY_INTERVAL + (Math.random()*ENEMY_INTERVAL_VARY) | 0;
     }
