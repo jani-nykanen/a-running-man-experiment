@@ -6,7 +6,7 @@
 
 
 // Global contants
-let FOLLOW_SPEED = 0.015;
+let FOLLOW_SPEED = 0.02;
 
 
  // Constructor
@@ -18,12 +18,16 @@ var FollowingSlime = function(param) {
     this.width = 0.75;
     this.height = 0.75;
 
+    this.acc.x = 0.0040;
+
     // Movement limits
     this.left = param[0];
     this.right = param[1];
 
     this.dir = Math.random() < 0.5 ? 1 : -1;
     this.target.x = this.dir * FOLLOW_SPEED;
+
+    this.wave = 0.0;
 }
 FollowingSlime.prototype = Object.create(Enemy.prototype);
 
@@ -31,16 +35,21 @@ FollowingSlime.prototype = Object.create(Enemy.prototype);
 // On update
 FollowingSlime.prototype.onUpdate = function(pl, tm) {
 
+    const WAVE_SPEED = 0.05;
+    const AMPLITUDE = 0.30;
+
+    // Update wave
+    this.wave += WAVE_SPEED * tm;
+
+    // Set y pos
+    this.pos.y = -Math.abs(Math.sin(this.wave) * AMPLITUDE);
+
+    // Set target speed
+    this.dir = pl.pos.x < this.pos.x ? -1 : 1;
+    this.target.x = this.dir * FOLLOW_SPEED;
+
     // Set flipping flag
     this.flip = this.dir > 0 ? Flip.Horizontal : Flip.None;
-
-    // If leaving the road
-    if( (this.dir < 0 && this.pos.x < this.left) 
-        || (this.dir > 0 && this.pos.x > this.right)) {
-
-        this.dir *= -1;
-        this.target.x = this.dir * FOLLOW_SPEED;
-    }
 }
 
 

@@ -146,8 +146,8 @@ Enemy.prototype.draw = function(g, a) {
 
     const YJUMP = 18;
     const SHADOW_JUMP = 10;
-    const SHADOW_WIDTH = 1.0;
-    const SHADOW_HEIGHT = 0.60;
+    const SHADOW_WIDTH = 0.90;
+    const SHADOW_HEIGHT = 0.70;
 
     if(!this.exist) return;
 
