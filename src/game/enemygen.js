@@ -49,7 +49,7 @@ EnemyGen.prototype.getNextEnemyIndex = function() {
 // Create an enemy
 EnemyGen.prototype.createEnemy = function(x, y, z, middle, w) {
 
-    const MAX_ID = 3;
+    const MAX_ID = 4;
 
     // Check if skip
     if(Math.random() <= 1.0 / this.skipProb) {
@@ -70,10 +70,11 @@ EnemyGen.prototype.createEnemy = function(x, y, z, middle, w) {
     let id = (Math.random() * MAX_ID) | 0;
 
     // Determine parameters
-    let params = [ null, [x - w/2, x + w/2], null ];
+    let b = [x - w/2, x + w/2];
+    let params = [ null, b, null, b];
 
     // Create enemy
-    this.enemies[i] = new ([PassiveSlime, HorizontalSlime, JumpingSlime][id]) (params[id]);
+    this.enemies[i] = new ([PassiveSlime, HorizontalSlime, JumpingSlime, FlyingSlime][id]) (params[id]);
 
     this.enemies[i].createSelf(x, y, z);
 

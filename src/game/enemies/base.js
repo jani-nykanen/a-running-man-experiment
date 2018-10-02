@@ -48,6 +48,9 @@ Enemy.prototype.createSelf = function(x, y, z) {
     this.speed.z = 0.0;
 
     this.exist = true;
+
+    if(this.onCreate != null)
+        this.onCreate();
 }
 
 
@@ -142,6 +145,7 @@ Enemy.prototype.playerCollision = function(pl) {
 Enemy.prototype.draw = function(g, a) {
 
     const YJUMP = 18;
+    const SHADOW_JUMP = 10;
     const SHADOW_WIDTH = 1.0;
     const SHADOW_HEIGHT = 0.60;
 
@@ -154,7 +158,7 @@ Enemy.prototype.draw = function(g, a) {
     // Draw shadow
     g.drawFlat3D(a.bitmaps.shadow, 0, 24, 24, 24, this.pos.x, 0.0, this.pos.z,
         SHADOW_WIDTH * shadowSize* this.width, 
-        SHADOW_HEIGHT * shadowSize * this.height, 12, Flip.None);
+        SHADOW_HEIGHT * shadowSize * this.height, SHADOW_JUMP, Flip.None);
 
     // Draw sprite
     this.spr.draw3D(g, a.bitmaps.enemies, this.pos.x, this.pos.y, this.pos.z,

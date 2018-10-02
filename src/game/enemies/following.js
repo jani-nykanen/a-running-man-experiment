@@ -1,19 +1,20 @@
 /**
- * Horizontally moving slime
+ * Following slime
  * 
  * @author Jani Nykänen
  */
 
+
 // Global contants
-let MOVE_SPEED = 0.015;
+let FOLLOW_SPEED = 0.015;
 
 
  // Constructor
-var HorizontalSlime = function(param) {
+var FollowingSlime = function(param) {
 
     Enemy.call(this);
 
-    this.id = 1;
+    this.id = 4;
     this.width = 0.75;
     this.height = 0.75;
 
@@ -22,13 +23,13 @@ var HorizontalSlime = function(param) {
     this.right = param[1];
 
     this.dir = Math.random() < 0.5 ? 1 : -1;
-    this.target.x = this.dir * MOVE_SPEED;
+    this.target.x = this.dir * FOLLOW_SPEED;
 }
-HorizontalSlime.prototype = Object.create(Enemy.prototype);
+FollowingSlime.prototype = Object.create(Enemy.prototype);
 
 
 // On update
-HorizontalSlime.prototype.onUpdate = function(pl, tm) {
+FollowingSlime.prototype.onUpdate = function(pl, tm) {
 
     // Set flipping flag
     this.flip = this.dir > 0 ? Flip.Horizontal : Flip.None;
@@ -38,15 +39,15 @@ HorizontalSlime.prototype.onUpdate = function(pl, tm) {
         || (this.dir > 0 && this.pos.x > this.right)) {
 
         this.dir *= -1;
-        this.target.x = this.dir * MOVE_SPEED;
+        this.target.x = this.dir * FOLLOW_SPEED;
     }
 }
 
 
 // Animate
-HorizontalSlime.prototype.animate = function(tm) {
+FollowingSlime.prototype.animate = function(tm) {
 
-    const ANIM_SPEED = 8;
+    const ANIM_SPEED = 6;
 
     this.spr.animate(this.id, 0, 3, ANIM_SPEED, tm);
 }

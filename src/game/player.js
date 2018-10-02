@@ -45,7 +45,7 @@ var Player = function (z) {
     // Fuel
     this.fuel = 1.0;
     // Lives
-    this.lives = 1;
+    this.lives = MAX_LIVES;
     // Maximum lives
     this.maxLives = MAX_LIVES;
 
@@ -253,7 +253,8 @@ Player.prototype.move = function (tm) {
     this.pos.y += this.speed.y * tm;
 
     // Update fuel (when on ground)
-    if(this.canJump && this.speed.z > FUEL_DELTA) {
+    if(this.canJump
+         && Math.max(Math.abs(this.speed.x,this.speed.z) > FUEL_DELTA) ) {
 
         this.fuel -= FUEL_FACTOR * tm;
     }
