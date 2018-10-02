@@ -98,10 +98,10 @@ Player.prototype.control = function (vpad, tm) {
     const ROLL_JUMP_HEIGHT = 0.0525;
     const ROLL_JUMP_BONUS = 1.15;
 
-    const JUMP_FUEL = 0.05;
-    const DJUMP_FUEL = 0.035;
+    const JUMP_FUEL = 0.040;
+    const DJUMP_FUEL = 0.030;
     const ROLL_JUMP_FUEL = 0.035;
-    const ROLL_FUEL = 0.05;
+    const ROLL_FUEL = 0.045;
 
     // Default
     this.target.x = 0.0;
@@ -443,4 +443,26 @@ Player.prototype.addLife = function() {
 
     if(this.lives < MAX)
         ++ this.lives;
+}
+
+
+// Get height
+Player.prototype.getHeight = function() {
+
+    const BASE_HEIGHT = 0.35;
+    const ROLL_HEIGHT = 0.1;
+
+    return this.rolling ? ROLL_HEIGHT : BASE_HEIGHT;
+}
+
+
+// Hurt
+Player.prototype.hurt = function() {
+
+    const HURT_TIME = 60.0;
+
+    if(this.hurtTimer > 0.0) return;
+
+    this.hurtTimer = HURT_TIME;
+    -- this.lives; 
 }

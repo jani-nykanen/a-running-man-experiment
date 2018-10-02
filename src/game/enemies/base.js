@@ -31,6 +31,8 @@ var Enemy = function () {
     // Dimensions
     this.width = 1.0;
     this.height = 1.0;
+    // Hit box
+    this.hitBox = {w: 0.5, h: 0.35};
 }
 
 
@@ -108,6 +110,30 @@ Enemy.prototype.update = function(pl, near, tm) {
     if(this.animate != null) {
 
         this.animate(tm);
+    }
+
+    // Player collision
+    this.playerCollision(pl);
+}
+
+
+// Player collision
+Enemy.prototype.playerCollision = function(pl) {
+
+    const PL_WIDTH = 0.0;
+    const DEPTH = 0.2;
+    const HURT_TIME = 60.0;
+
+    if(pl.hurtTimer > 0.0) return;
+
+    if(pl.pos.x + PL_WIDTH > this.pos.x-this.hitBox.w/2 
+    && pl.pos.x - PL_WIDTH < this.pos.x+this.hitBox.w/2
+    && pl.pos.y > this.pos.y-this.hitBox.h
+    && pl.pos.y-pl.getHeight() < this.pos.y
+    && pl.pos.z > this.pos.z-DEPTH - pl.speed.z
+    && pl.pos.z < this.pos.z+DEPTH + pl.speed.z) {
+
+        pl.hurt();
     }
 }
 
