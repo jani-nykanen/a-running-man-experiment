@@ -54,6 +54,9 @@ var Player = function (z) {
     // Hurt timer
     this.hurtTimer = 0.0;
 
+    // Speed bonus multiplier
+    this.speedBonus = 1;
+
     // Sprite
     this.spr = new Sprite(24, 24);
 }
@@ -97,6 +100,7 @@ Player.prototype.control = function (vpad, tm) {
     const ROLL_BONUS = 1.5;
     const ROLL_JUMP_HEIGHT = 0.0525;
     const ROLL_JUMP_BONUS = 1.15;
+    const TARGET_BONUS = 0.1;
 
     const JUMP_FUEL = 0.040;
     const DJUMP_FUEL = 0.030;
@@ -204,6 +208,9 @@ Player.prototype.control = function (vpad, tm) {
         this.target.x *= BOOST_MOD;
         this.target.z *= BOOST_MOD;
     }
+
+    // General bonus
+    this.target.z *= 1.0 + this.speedBonus * TARGET_BONUS;
 }
 
 
@@ -230,6 +237,8 @@ Player.prototype.move = function (tm) {
     const FUEL_FACTOR = 0.00035;
     const FUEL_DELTA = 0.001;
 
+    const ACC_BONUS = 0.1;
+
     let m = this.flashTimer > 0.0 ? BOOST_MOD : 1.0;
 
     // Calculate Z acceleration
@@ -239,6 +248,8 @@ Player.prototype.move = function (tm) {
             Math.min(1.0, Math.pow( (this.speed.z/m) / this.speedLimit.z, 2));
     else
         accl = ACC_OFF_ROAD;
+
+    accl *= 1.0 + this.speedBonus * ACC_BONUS;
 
     // Update speeds
     this.speed.x = this.updateSpeed(
@@ -466,4 +477,11 @@ Player.prototype.hurt = function() {
 
     this.hurtTimer = HURT_TIME;
     -- this.lives; 
+}
+
+
+// Add speed
+Player.prototype.addSpeed = function() {
+
+    ++ this.speedBonus;
 }

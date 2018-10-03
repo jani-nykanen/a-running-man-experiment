@@ -33,6 +33,8 @@ var Enemy = function () {
     this.height = 1.0;
     // Hit box
     this.hitBox = {w: 0.5, h: 0.35};
+    // Shadow width
+    this.shadowWidth = 1.0;
 }
 
 
@@ -125,7 +127,6 @@ Enemy.prototype.playerCollision = function(pl) {
 
     const PL_WIDTH = 0.0;
     const DEPTH = 0.2;
-    const HURT_TIME = 60.0;
 
     if(pl.hurtTimer > 0.0) return;
 
@@ -157,7 +158,7 @@ Enemy.prototype.draw = function(g, a) {
 
     // Draw shadow
     g.drawFlat3D(a.bitmaps.shadow, 0, 24, 24, 24, this.pos.x, 0.0, this.pos.z,
-        SHADOW_WIDTH * shadowSize* this.width, 
+        SHADOW_WIDTH * shadowSize * this.shadowWidth * this.width, 
         SHADOW_HEIGHT * shadowSize * this.height, SHADOW_JUMP, Flip.None);
 
     // Draw sprite

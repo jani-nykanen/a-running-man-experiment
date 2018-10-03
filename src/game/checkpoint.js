@@ -20,6 +20,7 @@ var Checkpoint = function () {
     this.ready = false;
 
     this.interval = 0.0;
+    this.activeCount = 0;
     this.triggered = false;
 
     // Message timer for "CHECKPOINT!" text
@@ -39,6 +40,8 @@ Checkpoint.prototype.createSelf = function (x, y, z) {
     this.triggered = false;
 
     this.interval = z;
+    this.initialInterval = z;
+    this.activeCount = 1;
 
     this.messageTimer = 0.0;
 }
@@ -65,8 +68,12 @@ Checkpoint.prototype.update = function (pl, hud, near, far, tm) {
     // Trigger event
     if(!this.triggered && this.pos.z <= pl.pos.z) {
 
+        if(this.activeCount > 1)
+            pl.addSpeed();
+
         hud.addTime(TIME_BONUS);
-        this.triggered = true;
+        this.interval = this.initialInterval * (++ this.activeCount);
+        this.triggered = true; 
     }
 
     // If near enough, move forward

@@ -23,7 +23,7 @@ Game.prototype = Object.create(Scene.prototype);
 Game.prototype.reset = function() {
 
     const OBUF_SIZE = 64;
-    const CHECKPOINT_INTERVAL = 16.667 * 2 * 5;
+    const CHECKPOINT_INTERVAL = 16.667 * 2 * 1;
 
     // Create components
     this.bg = new Background();
