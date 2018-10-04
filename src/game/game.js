@@ -125,9 +125,13 @@ Game.prototype.draw = function (g) {
     // Draw HUD
     this.hud.draw(g, this.assets);
 
+    // Draw HUD death message
+    this.hud.drawDeathMessage(g, this.assets, this.player);
+
     // Draw possible checkpoint message
     this.checkpoint.drawMessage(g, this.assets);
 
     // Draw pause box
     this.pause.draw(g, this.assets);
+
 }

@@ -61,6 +61,11 @@ var Player = function (z) {
     // "Phase"
     this.phase = 0;
 
+    // Is dying
+    this.dying = false;
+    // Death type
+    this.deathType = 0;
+
     // Sprite
     this.spr = new Sprite(24, 24);
 }
@@ -93,7 +98,7 @@ Player.prototype.updateSpeed = function (speed, target, acc, tm) {
 // Control
 Player.prototype.control = function (vpad, tm) {
 
-    const BRAKE_FACTOR = 0.001;
+    const BRAKE_FACTOR = 0.0025;
     const DELTA = 0.05;
     const X_BONUS = 3.0;
     const GRAVITY = 0.025;
@@ -309,9 +314,23 @@ Player.prototype.animate = function (tm) {
     const DELTA = 0.0001;
     const JUMP_DELTA = 0.01;
     const ROLL_SPEED = 4;
+    const SPIN_SPEED = 8;
 
+    // If dying
+    if(this.dying) {
+
+        // Touch ground
+        if(this.canJump) {
+
+            this.spr.animate(8, 4, 4, 0, tm);
+        }
+        else {
+
+            this.spr.animate(8, 0, 3, SPIN_SPEED, tm);
+        }
+    }
     // Double jumping or rolling
-    if (this.doubleJump || this.rolling) {
+    else if (this.doubleJump || this.rolling) {
 
         this.spr.animate(this.animRow, 8, 11, ROLL_SPEED, tm);
     }
@@ -372,26 +391,48 @@ Player.prototype.updateCamera = function (cam, tm) {
 // Update
 Player.prototype.update = function (vpad, camX, tm) {
 
-    // Update flash timer
-    if(this.flashTimer > 0.0) {
+    if(this.dying) {
 
-        this.flashTimer -= 1.0 * tm;
+        this.flashTimer = 0.0;
+        this.hurtTimer = 0.0;
+        this.healTimer = 0.0;
+
+        this.target.z = 0.0;
+        this.target.x = 0.0;
+    }
+    else {
+
+        // Check death
+        if(this.lives <= 0
+        || this.fuel <= 0.0) {
+
+            // Die
+            this.die(this.lives <= 0 ? 0 : 1);
+        }
+
+        // Update flash timer
+        if(this.flashTimer > 0.0) {
+
+            this.flashTimer -= 1.0 * tm;
+        }
+
+        // Update hurt timer
+        if(this.hurtTimer > 0.0) {
+
+            this.hurtTimer -= 1.0 * tm;
+        }
+
+        // Update heal timer
+        if(this.healTimer > 0.0) {
+
+            this.healTimer -= 1.0 * tm;
+        }
+
+        // Control
+        this.control(vpad, tm);
+
     }
 
-    // Update hurt timer
-    if(this.hurtTimer > 0.0) {
-
-        this.hurtTimer -= 1.0 * tm;
-    }
-
-    // Update heal timer
-    if(this.healTimer > 0.0) {
-
-        this.healTimer -= 1.0 * tm;
-    }
-
-    // Control
-    this.control(vpad, tm);
     // Move
     this.move(tm);
     // Animate
@@ -503,4 +544,17 @@ Player.prototype.addPhase = function() {
 
     if(++ this.phase > 1)
         ++ this.speedBonus;
+}
+
+
+// Die
+Player.prototype.die = function(t) {
+
+    const FLY_HEIGHT = 0.05;
+
+    if(this.dying) return;
+
+    this.dying = true;  
+    this.deathType = t;
+    this.speed.y = -FLY_HEIGHT;
 }

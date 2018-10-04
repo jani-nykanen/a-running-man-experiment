@@ -8,17 +8,24 @@
 // Constructor
 var HUD = function() {
 
+    const INITIAL_TIME_SECONDS = 60.0;
+
     // Distance
     this.dist = 0.0;
     // To checkpoint
     this.checkpointDist = 500.0;
     // Time
-    this.time = 60.0 * 60.0;
+    this.time = INITIAL_TIME_SECONDS * 60.0;
 
     // Lives
     this.lives = 3;
     // Fuel
     this.fuel = 1.0;
+
+    // Death activated
+    this.deathActivated = false;
+    // Death message timer
+    this.deathMsgTimer = 0.0;
 }
 
 
@@ -107,7 +114,15 @@ HUD.prototype.update = function(pl, checkpoint, tm) {
     this.checkpointDist = checkpoint.getDistance(pl) * METRE / 2.0 * tm;
 
     // Update time
-    this.time -= 1.0 * tm;
+    if(this.time > 0.0)
+        this.time -= 1.0 * tm;
+    if(this.time <= 0.0) {
+
+        // Kill player
+        pl.die(2);
+
+        this.time = 0.0;
+    }
 
     // Update fuel
     let fuel = pl.fuel;
@@ -126,6 +141,18 @@ HUD.prototype.update = function(pl, checkpoint, tm) {
 
     // Set lives
     this.lives = pl.lives;
+
+    // Check player death
+    if(pl.dying && !this.deathActivated) {
+
+        this.deathActivated = true;
+    }
+
+    // Update death timer
+    if(this.deathActivated) {
+
+        this.deathMsgTimer += 1.0 * tm;
+    }
 }
 
 
@@ -140,6 +167,27 @@ HUD.prototype.draw = function(g, a) {
 
     // Draw fuel
     this.drawFuel(g, a);
+}
+
+
+// Draw death message
+HUD.prototype.drawDeathMessage = function(g, a, pl) {
+
+    const FLICKER_TIME = 60.0;
+    const TEXT = [
+        "YOU DIED.", "OUT OF FUEL",
+        "TIME'S UP!"
+    ];
+
+    if(!pl.dying || !this.deathActivated) return;
+
+    // Flicker
+    if(this.deathMsgTimer < FLICKER_TIME
+        && Math.floor(this.deathMsgTimer / 2) % 2 == 0)
+            return;
+
+    // Draw text
+    g.drawText(a.bitmaps.font, TEXT[pl.deathType], 64, 32, -1, 0, true);
 }
 
 
