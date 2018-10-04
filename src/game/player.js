@@ -68,6 +68,8 @@ var Player = function (z) {
 
     // Sprite
     this.spr = new Sprite(24, 24);
+    this.spr.row = 8;
+    this.spr.frame = 5;
 }
 
 

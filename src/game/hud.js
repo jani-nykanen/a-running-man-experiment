@@ -6,9 +6,10 @@
 
 
 // Constructor
-var HUD = function() {
+var HUD = function () {
 
     const INITIAL_TIME_SECONDS = 60.0;
+    const START_TIME = 60.0 * 4;
 
     // Distance
     this.dist = 0.0;
@@ -26,18 +27,21 @@ var HUD = function() {
     this.deathActivated = false;
     // Death message timer
     this.deathMsgTimer = 0.0;
+
+    // Start timer (3,2,1, GO)
+    this.startTimer = START_TIME;
 }
 
 
 // Get distance string
-HUD.prototype.getDistanceString = function(f, dec) {
+HUD.prototype.getDistanceString = function (f, dec) {
 
     let s = "";
-    if( (f|0) < 1000 && dec) {
+    if ((f | 0) < 1000 && dec) {
 
         let x = Math.floor(f * 10) / 10.0;
         s = String(x);
-        if(x == (x | 0)) 
+        if (x == (x  | 0))
             s += ".0";
     }
     else {
@@ -50,7 +54,7 @@ HUD.prototype.getDistanceString = function(f, dec) {
 
 
 // Draw time & distance
-HUD.prototype.drawTimeAndDistance = function(g, a) {
+HUD.prototype.drawTimeAndDistance = function (g, a) {
 
     let bmpText = a.bitmaps.tinyText;
 
@@ -66,45 +70,58 @@ HUD.prototype.drawTimeAndDistance = function(g, a) {
     g.drawText(bmpFont, this.getDistanceString(this.dist, true), 26, 8, -1, 0, true);
 
     // Draw distance to checkpoint
-    g.drawText(bmpFont, this.getDistanceString(this.checkpointDist, false), 96+8, 8, -1, 0, true);
+    g.drawText(bmpFont, this.getDistanceString(this.checkpointDist, false), 96 + 8, 8, -1, 0, true);
 
     // Draw time
-    g.drawText(bmpBig, String( Math.ceil(this.time/60.0) ), 64, 9, 0, 0, true);
+    g.drawText(bmpBig, String(Math.ceil(this.time / 60.0)), 64, 9, 0, 0, true);
 }
 
 
 // Draw lives
-HUD.prototype.drawLives = function(g, a) {
+HUD.prototype.drawLives = function (g, a) {
 
-    for(let i = 0; i < 3; ++ i) {
+    for (let i = 0; i < 3; ++i) {
 
-        g.drawBitmapRegion(a.bitmaps.hud, 
-            (i+1 > this.lives) * 16, 0, 
-            16, 16, 
-            1+i*16, 128-17);
+        g.drawBitmapRegion(a.bitmaps.hud,
+            (i + 1 > this.lives) * 16, 0,
+            16, 16,
+            1 + i * 16, 128 - 17);
     }
 }
 
 
 // Draw fuel
-HUD.prototype.drawFuel = function(g, a) {
+HUD.prototype.drawFuel = function (g, a) {
 
     // Draw fuel icon
-    g.drawBitmapRegion(a.bitmaps.hud, 32, 0, 16, 16, 128-15, 128-17);
+    g.drawBitmapRegion(a.bitmaps.hud, 32, 0, 16, 16, 128 - 15, 128 - 17);
 
     // Draw background bar
-    g.drawBitmapRegion(a.bitmaps.hud, 0, 32, 48, 16, 128-62, 128-18);
+    g.drawBitmapRegion(a.bitmaps.hud, 0, 32, 48, 16, 128 - 62, 128 - 18);
 
     // Draw bar
     let t = this.fuel * 47;
-    let p = 48 +  ((3.0 - (this.fuel / 0.33333) | 0 ) * 16 );
-    g.drawBitmapRegion(a.bitmaps.hud, 0, 16, (t | 0) +1, 16, 128-62, 128-18);
-    g.drawBitmapRegion(a.bitmaps.hud, 0, p, t | 0, 16, 128-62, 128-18);
+    let p = 48 + ((3.0 - (this.fuel / 0.33333) | 0) * 16);
+    g.drawBitmapRegion(a.bitmaps.hud, 0, 16, (t | 0) + 1, 16, 128 - 62, 128 - 18);
+    g.drawBitmapRegion(a.bitmaps.hud, 0, p, t | 0, 16, 128 - 62, 128 - 18);
+}
+
+
+// Draw start time
+HUD.prototype.drawStartTime = function (g, a) {
+
+    let frame = 4- (this.startTimer / 60.0) | 0;
+
+    let x = 64-16;
+    let y = 32;
+
+    g.drawBitmapRegion(a.bitmaps.ready, frame*32, 0, 32, 32,
+        x, y, Flip.None);
 }
 
 
 // Update
-HUD.prototype.update = function(pl, checkpoint, tm) {
+HUD.prototype.update = function (pl, checkpoint, tm) {
 
     const METRE = 3.0;
     const FUEL_DELTA_SPEED = 0.005;
@@ -113,10 +130,17 @@ HUD.prototype.update = function(pl, checkpoint, tm) {
     this.dist += pl.speed.z * METRE * tm;
     this.checkpointDist = checkpoint.getDistance(pl) * METRE / 2.0 * tm;
 
+    // Update start timer
+    if (this.startTimer > 0.0) {
+
+        this.startTimer -= 1.0 * tm;
+        return;
+    }
+
     // Update time
-    if(this.time > 0.0)
+    if (!pl.dying)
         this.time -= 1.0 * tm;
-    if(this.time <= 0.0) {
+    if (this.time <= 0.0) {
 
         // Kill player
         pl.die(2);
@@ -126,16 +150,16 @@ HUD.prototype.update = function(pl, checkpoint, tm) {
 
     // Update fuel
     let fuel = pl.fuel;
-    if(fuel < this.fuel) {
+    if (fuel < this.fuel) {
 
         this.fuel -= FUEL_DELTA_SPEED * tm;
-        if(this.fuel < fuel)
+        if (this.fuel < fuel)
             this.fuel = fuel;
     }
-    else if(fuel > this.fuel) {
+    else if (fuel > this.fuel) {
 
         this.fuel += FUEL_DELTA_SPEED * tm;
-        if(this.fuel > fuel)
+        if (this.fuel > fuel)
             this.fuel = fuel;
     }
 
@@ -143,13 +167,13 @@ HUD.prototype.update = function(pl, checkpoint, tm) {
     this.lives = pl.lives;
 
     // Check player death
-    if(pl.dying && !this.deathActivated) {
+    if (pl.dying && !this.deathActivated) {
 
         this.deathActivated = true;
     }
 
     // Update death timer
-    if(this.deathActivated) {
+    if (this.deathActivated) {
 
         this.deathMsgTimer += 1.0 * tm;
     }
@@ -157,7 +181,7 @@ HUD.prototype.update = function(pl, checkpoint, tm) {
 
 
 // Draw
-HUD.prototype.draw = function(g, a) {
+HUD.prototype.draw = function (g, a) {
 
     // Draw time & distance textes
     this.drawTimeAndDistance(g, a);
@@ -167,24 +191,30 @@ HUD.prototype.draw = function(g, a) {
 
     // Draw fuel
     this.drawFuel(g, a);
+
+    // Draw start text
+    if (this.startTimer > 0.0) {
+
+        this.drawStartTime(g, a);
+    }
 }
 
 
 // Draw death message
-HUD.prototype.drawDeathMessage = function(g, a, pl) {
+HUD.prototype.drawDeathMessage = function (g, a, pl) {
 
     const FLICKER_TIME = 60.0;
     const TEXT = [
-        "YOU DIED.", "OUT OF FUEL",
+        "OUT OF LOVE", "OUT OF FUEL",
         "TIME'S UP!"
     ];
 
-    if(!pl.dying || !this.deathActivated) return;
+    if (!pl.dying || !this.deathActivated) return;
 
     // Flicker
-    if(this.deathMsgTimer < FLICKER_TIME
+    if (this.deathMsgTimer < FLICKER_TIME
         && Math.floor(this.deathMsgTimer / 2) % 2 == 0)
-            return;
+        return;
 
     // Draw text
     g.drawText(a.bitmaps.font, TEXT[pl.deathType], 64, 32, -1, 0, true);
@@ -192,9 +222,9 @@ HUD.prototype.drawDeathMessage = function(g, a, pl) {
 
 
 // Add time
-HUD.prototype.addTime = function(sec) {
+HUD.prototype.addTime = function (sec) {
 
     this.time += sec * 60.0;
-    if(this.time > 99.0 * 60)
+    if (this.time > 99.0 * 60)
         this.time = 99.0 * 60;
 }

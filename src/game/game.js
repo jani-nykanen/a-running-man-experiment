@@ -73,8 +73,9 @@ Game.prototype.update = function (tm) {
         return;
     }
 
-    // Update player & camera
-    this.camX = this.player.update(this.vpad, this.camX, tm);
+    // Update player & camera (if not start timer active)
+    if(this.hud.startTimer <= 60.0)
+        this.camX = this.player.update(this.vpad, this.camX, tm);
 
     // Update road
     this.road.update(this.player, this.checkpoint, tm);

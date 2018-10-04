@@ -57,6 +57,10 @@ Checkpoint.prototype.update = function (pl, hud, near, far, tm) {
     if(this.messageTimer > 0.0)
         this.messageTimer -= 1.0 * tm;
 
+    // If player death, disable message
+    if(pl.dying)
+        this.messageTimer = 0.0;
+
     // If too far away, do not draw
     this.ready = this.pos.z < far;
 

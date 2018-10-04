@@ -26,6 +26,7 @@ let assetInfo = {
         items: "items.png",
         checkpoint: "checkpoint.png",
         enemies: "enemies.png",
+        ready: "ready.png",
     }
 };
 
