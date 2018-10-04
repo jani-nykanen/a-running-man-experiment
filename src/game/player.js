@@ -56,6 +56,8 @@ var Player = function (z) {
 
     // Speed bonus multiplier
     this.speedBonus = 1;
+    // "Phase"
+    this.phase = 0;
 
     // Sprite
     this.spr = new Sprite(24, 24);
@@ -481,7 +483,8 @@ Player.prototype.hurt = function() {
 
 
 // Add speed
-Player.prototype.addSpeed = function() {
+Player.prototype.addPhase = function() {
 
-    ++ this.speedBonus;
+    if(++ this.phase > 1)
+        ++ this.speedBonus;
 }

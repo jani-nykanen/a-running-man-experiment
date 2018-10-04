@@ -11,6 +11,7 @@ let ENEMY_TIME_INITIAL = 15;
 let ENEMY_SKIP_PROB_MIN = 2;
 let ENEMY_SKIP_PROB_MAX = 6;
 
+
 // Constructor
 var EnemyGen = function() {
 
@@ -32,6 +33,32 @@ var EnemyGen = function() {
 }
 
 
+// Get enemy by probability
+EnemyGen.prototype.getEnemyTypeByProbability = function(p, phase) {
+    
+    const PROBABILITIES = [
+        [0.5, 0.4, 0.2, 0.0, 0.0, 0.0],
+        [0.4, 0.3, 0.2, 0.1, 0.0, 0.0],
+        [0.2, 0.2, 0.2, 0.2, 0.1, 0.1],
+        [0.1, 0.2, 0.2, 0.2, 0.1, 0.2],
+        [0.05, 0.15, 0.15, 0.2, 0.25, 0.2]
+    ];
+    phase = Math.min(PROBABILITIES.length -1, phase);
+
+    // Check id
+    let arr = PROBABILITIES[phase];
+    let sum = 0.0;
+    for(let i = 0; i < arr.length; ++ i) {
+
+        if(p >= sum  && p < sum + arr[i])
+            return i;
+
+        sum += arr[i];
+    }
+    return arr.length-1;
+}
+
+
 // Get the next enemy index
 EnemyGen.prototype.getNextEnemyIndex = function() {
 
@@ -47,7 +74,7 @@ EnemyGen.prototype.getNextEnemyIndex = function() {
 
 
 // Create an enemy
-EnemyGen.prototype.createEnemy = function(x, y, z, middle, w) {
+EnemyGen.prototype.createEnemy = function(x, y, z, w, phase) {
 
     const MAX_ID = 6;
 
@@ -67,7 +94,8 @@ EnemyGen.prototype.createEnemy = function(x, y, z, middle, w) {
     }
 
     let i = this.getNextEnemyIndex();
-    let id = (Math.random() * MAX_ID) | 0;
+  //  let id = (Math.random() * MAX_ID) | 0;
+    let id = this.getEnemyTypeByProbability(Math.random(), phase);
 
     // Determine parameters
     let b = [x - w/2, x + w/2];
@@ -86,7 +114,7 @@ EnemyGen.prototype.createEnemy = function(x, y, z, middle, w) {
 
 
 // Update timer
-EnemyGen.prototype.updateTimer = function(x, z, w) {
+EnemyGen.prototype.updateTimer = function(x, z, w, phase) {
 
     const WIDTH_MOD = 0.625;
 
@@ -94,7 +122,7 @@ EnemyGen.prototype.updateTimer = function(x, z, w) {
 
         // Create enemy
         this.createEnemy(x + (Math.random()*2-1) * (w*WIDTH_MOD/2), 
-            0.0, z, x, w);
+            0.0, z, w, phase);
 
         this.timer += ENEMY_INTERVAL + (Math.random()*ENEMY_INTERVAL_VARY) | 0;
     }

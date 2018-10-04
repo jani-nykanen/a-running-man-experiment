@@ -285,7 +285,7 @@ Road.prototype.update = function (pl, checkpoint, tm) {
                 this.oldX, z + this.startPos, this.roadWidth, pl)) {
 
                 // Update enemy generator
-                this.enemies.updateTimer(this.oldX, z + this.startPos, this.roadWidth);
+                this.enemies.updateTimer(this.oldX, z + this.startPos, this.roadWidth, pl.phase);
             }
         }
     }

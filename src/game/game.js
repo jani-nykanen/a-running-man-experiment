@@ -24,6 +24,7 @@ Game.prototype.reset = function() {
 
     const OBUF_SIZE = 64;
     const CHECKPOINT_INTERVAL = 16.667 * 2 * 1;
+    const INITIAL_CHECKPOINT_POS = 16.667 * 2 * 2;
 
     // Create components
     this.bg = new Background();
@@ -38,6 +39,7 @@ Game.prototype.reset = function() {
 
     // Set checkpoint
     this.checkpoint.createSelf(0.0, 0.0, 
+        INITIAL_CHECKPOINT_POS,
         CHECKPOINT_INTERVAL);
     this.checkpoint.pos.z += this.player.pos.z;
 
