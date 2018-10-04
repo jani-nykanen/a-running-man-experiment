@@ -53,6 +53,8 @@ var Player = function (z) {
     this.flashTimer = 0.0;
     // Hurt timer
     this.hurtTimer = 0.0;
+    // Heal timer
+    this.healTimer = 0.0;
 
     // Speed bonus multiplier
     this.speedBonus = 1;
@@ -382,6 +384,12 @@ Player.prototype.update = function (vpad, camX, tm) {
         this.hurtTimer -= 1.0 * tm;
     }
 
+    // Update heal timer
+    if(this.healTimer > 0.0) {
+
+        this.healTimer -= 1.0 * tm;
+    }
+
     // Control
     this.control(vpad, tm);
     // Move
@@ -424,6 +432,11 @@ Player.prototype.draw = function (g, a) {
 
         this.spr.row += 2;
     }
+    else if(this.healTimer > 0.0 
+        && Math.floor(this.healTimer/2) % 2 == 0) {
+
+        this.spr.row += 6;
+    }
     this.spr.draw(g, a.bitmaps.player, p.x - 12, p.y - 20 + yplus, this.flip);
     this.spr.row = r;
 }
@@ -454,9 +467,12 @@ Player.prototype.addFuel = function(amount) {
 Player.prototype.addLife = function() {
 
     const MAX = 3;
+    const HEAL_TIME = 60.0;
 
     if(this.lives < MAX)
         ++ this.lives;
+
+    this.healTimer = HEAL_TIME;
 }
 
 
