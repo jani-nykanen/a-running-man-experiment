@@ -58,6 +58,6 @@ AssetPack.prototype.hasLoaded = function() {
 // (actually in range [0,1])
 AssetPack.prototype.getPercentage = function() {
 
-    if(assets.total == 0) return 0.0;
-    return assets.loaded / assets.total;
+    if(this.total == 0) return 0.0;
+    return this.loaded / this.total;
 }

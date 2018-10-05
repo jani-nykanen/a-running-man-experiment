@@ -56,6 +56,9 @@ GameOver.prototype.confirmEvent = function(cursor, game) {
 
     // Quit
     case 2:
+        game.global.trans.activate(2.0, Mode.In, function() {
+            game.app.changeScene("title");
+        });
         break;
 
     default:

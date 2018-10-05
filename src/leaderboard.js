@@ -10,6 +10,8 @@ var ScoreEntry = function(name, score) {
 
     this.name = name;
     this.value = score;
+
+    this.returnScene = null;
 }
 
 
@@ -52,9 +54,10 @@ Leaderboard.prototype.update = function(tm) {
     // Check confirm key pressing
     if(this.vpad.buttons.confirm == State.Pressed) {
 
+        let s = this.returnScene;
         this.global.trans.activate(2.0, Mode.In, function() {
 
-            appRef.changeScene("game");
+            appRef.changeScene(s.name);
         });
     }
 }
@@ -97,7 +100,7 @@ Leaderboard.prototype.draw = function(g) {
 
 
 // On change
-Leaderboard.prototype.onChange = function() {
+Leaderboard.prototype.onChange = function(scene) {
 
-    // ...
+    this.returnScene = scene;
 }

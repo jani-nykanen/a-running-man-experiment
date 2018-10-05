@@ -68,7 +68,7 @@ Application.prototype.changeScene = function(target) {
 
     if(s.onChange != null) {
 
-        s.onChange();
+        s.onChange(this.activeScene);
     }
     this.activeScene = s;
 }
@@ -95,8 +95,27 @@ Application.prototype.init = function(assetInfo, buttonList) {
 // Draw the loading screen
 Application.prototype.drawLoading = function(g) {
 
+    const WIDTH = 64;
+    const HEIGHT = 12;
+
     this.graphics.clearScreen(0, 0, 0);
     // TODO: Loading bar
+
+    let t = this.assets.getPercentage();
+    let x = 64-WIDTH/2;
+    let y = 64-HEIGHT/2;
+
+    // Draw outlines
+    g.setGlobalColor(255, 255, 255);
+    g.fillRect(x-2, y-2, WIDTH+4, HEIGHT+4);
+    
+    g.setGlobalColor(0, 0, 0);
+    g.fillRect(x-1, y-1, WIDTH+2, HEIGHT+2);
+
+    // Draw bar
+    let w = (WIDTH*t) | 0;
+    g.setGlobalColor(255, 255, 255);
+    g.fillRect(x, y, w, HEIGHT);
 }
 
 

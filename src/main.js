@@ -28,6 +28,7 @@ let assetInfo = {
         enemies: "enemies.png",
         ready: "ready.png",
         logo: "logo.png",
+        creator: "creator.png",
     }
 };
 
@@ -50,9 +51,10 @@ function main() {
         function(app) {
 
             app.addScene(new Global(app), true);
-            app.addScene(new Game(app), false, true);
+            app.addScene(new Game(app), false);
             app.addScene(new Leaderboard(app), false);
             app.addScene(new Title(app), false);
+            app.addScene(new Intro(app), false, true);
         },
         buttonList);
 }

@@ -13,8 +13,6 @@ var Game = function (app) {
     // (Re)set content
     this.reset();
 
-    // Set fading
-    this.global.trans.activate(2.0, Mode.Out, null);
 }
 Game.prototype = Object.create(Scene.prototype);
 
@@ -98,10 +96,12 @@ Game.prototype.update = function (tm) {
     this.hud.update(this.player, this.checkpoint, this.gover, tm);
 
     // TEMP
+    /*
     if(this.vpad.buttons.test == State.Pressed) {
 
         this.gover.activate(this.hud);
     }
+    */
 }
 
 
