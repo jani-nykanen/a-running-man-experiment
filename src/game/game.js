@@ -31,6 +31,7 @@ Game.prototype.reset = function() {
     this.road = new Road();
     this.hud = new HUD();
     this.pause = new Pause();
+    this.gover = new GameOver();
 
     // Create game objects
     this.player = new Player(1.25);
@@ -61,6 +62,13 @@ Game.prototype.update = function (tm) {
     if(this.global.trans.active && this.updatedOnce) return;
     this.updatedOnce = true;
 
+    // Check game over
+    if(this.gover.active) {
+
+        this.gover.update(this.vpad, this, tm);
+        return;
+    }
+
     // Check pause
     if(this.pause.active) {
 
@@ -87,8 +95,13 @@ Game.prototype.update = function (tm) {
     this.checkpoint.update(this.player, this.hud, NEAR, FAR, tm);
 
     // Update HUD
-    this.hud.update(this.player, this.checkpoint, tm);
+    this.hud.update(this.player, this.checkpoint, this.gover, tm);
 
+    // TEMP
+    if(this.vpad.buttons.test == State.Pressed) {
+
+        this.gover.activate(this.hud);
+    }
 }
 
 
@@ -123,16 +136,24 @@ Game.prototype.draw = function (g) {
     this.obuf.sortByDepth();
     this.obuf.draw(g, this.assets);
 
-    // Draw HUD
-    this.hud.draw(g, this.assets);
+    if(!this.gover.active) {
 
-    // Draw HUD death message
-    this.hud.drawDeathMessage(g, this.assets, this.player);
+        // Draw HUD
+        this.hud.draw(g, this.assets);
 
-    // Draw possible checkpoint message
-    this.checkpoint.drawMessage(g, this.assets);
+        // Draw HUD death message
+        this.hud.drawDeathMessage(g, this.assets, this.player);
 
-    // Draw pause box
-    this.pause.draw(g, this.assets);
+        // Draw possible checkpoint message
+        this.checkpoint.drawMessage(g, this.assets);
+
+        // Draw pause box
+        this.pause.draw(g, this.assets);
+    }
+    else {
+
+        // Draw Game Over! screen
+        this.gover.draw(g, this.assets);
+    }
 
 }

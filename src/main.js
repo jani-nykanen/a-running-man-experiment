@@ -37,6 +37,7 @@ let buttonList = {
     fire2: 88,
     confirm: 13,
     cancel: 27,
+    test: 65,
 };
 
 

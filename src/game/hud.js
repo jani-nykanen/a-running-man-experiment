@@ -27,6 +27,8 @@ var HUD = function () {
     this.deathActivated = false;
     // Death message timer
     this.deathMsgTimer = 0.0;
+    // Death timer
+    this.deathTimer = 0.0;
 
     // Start timer (3,2,1, GO)
     this.startTimer = START_TIME;
@@ -121,10 +123,11 @@ HUD.prototype.drawStartTime = function (g, a) {
 
 
 // Update
-HUD.prototype.update = function (pl, checkpoint, tm) {
+HUD.prototype.update = function (pl, checkpoint, gover, tm) {
 
     const METRE = 3.0;
     const FUEL_DELTA_SPEED = 0.005;
+    const DEATH_WAIT = 120;
 
     // Update distances
     this.dist += pl.speed.z * METRE * tm;
@@ -175,7 +178,19 @@ HUD.prototype.update = function (pl, checkpoint, tm) {
     // Update death timer
     if (this.deathActivated) {
 
+        // Update message timer
         this.deathMsgTimer += 1.0 * tm;
+    
+        // Update death timer
+        if(pl.canJump) {
+
+            this.deathTimer += 1.0 * tm;
+            if(this.deathTimer >= DEATH_WAIT) {
+
+                gover.activate(this);
+                return;
+            }
+        }
     }
 }
 
