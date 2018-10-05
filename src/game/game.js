@@ -30,8 +30,8 @@ Game.prototype.reset = function() {
     this.bg = new Background();
     this.road = new Road();
     this.hud = new HUD();
-    this.pause = new Pause();
-    this.gover = new GameOver();
+    this.pause = new Pause(this);
+    this.gover = new GameOver(this);
 
     // Create game objects
     this.player = new Player(1.25);

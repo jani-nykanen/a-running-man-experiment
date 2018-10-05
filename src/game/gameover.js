@@ -6,7 +6,13 @@
 
 
 // Constructor
-var GameOver = function() {
+var GameOver = function(game) {
+
+    const TEXT = [
+        "SUBMIT",
+        "PLAY AGAIN",
+        "QUIT"
+    ];
 
     // Is active
     this.active = false;
@@ -14,6 +20,38 @@ var GameOver = function() {
     // Distance string & valye
     this.distStr = "";
     this.dist = 0;
+
+    // Menu
+    this.menu = new Menu(TEXT, function(cursor, arr) {
+
+        arr[0].confirmEvent(cursor, arr[1]);
+    }, [this, game]);
+}
+
+
+// Handle confirm event
+GameOver.prototype.confirmEvent = function(cursor, game) {
+
+    switch(cursor) {
+
+    // Submit
+    case 0:
+        break;
+
+    // Play again
+    case 1:
+        game.global.trans.activate(2.0, Mode.In, function() {
+            game.reset();
+        });
+        break;
+
+    // Quit
+    case 2:
+        break;
+
+    default:
+        break;
+    }
 }
 
 
@@ -32,6 +70,7 @@ GameOver.prototype.drawBox = function (g, w, h) {
 
     g.setGlobalColor(85, 85, 85);
     g.fillRect(x, y, w, h);
+    
 }
 
 
@@ -48,23 +87,21 @@ GameOver.prototype.activate = function(hud) {
 // Update
 GameOver.prototype.update = function(vpad, game, tm) {
 
-    // Confirm pressed, restart
-    if(vpad.buttons.confirm == State.Pressed) {
-
-        game.global.trans.activate(2.0, Mode.In, function() {
-            game.reset();
-        });
-    }
+    // Update menu
+    this.menu.update(vpad);
 }
 
 
 // Draw
 GameOver.prototype.draw = function(g, a) {
 
-    const BOX_HEIGHT = 64;
+    const BOX_HEIGHT = 80;
     const BOX_WIDTH = 96;
 
     const GAME_OVER_Y = 2;
+    const MENU_Y = 36;
+    const MENU_X = - 48;
+    const Y_OFF = 14;
 
     // Draw background box
     this.drawBox(g, BOX_WIDTH, BOX_HEIGHT);
@@ -77,4 +114,7 @@ GameOver.prototype.draw = function(g, a) {
     // Draw distance
     g.drawBitmapRegion(a.bitmaps.tinyText, 0, 0, 32, 8, x-16, y + 12);
     g.drawText(a.bitmaps.font, this.distStr, x, y+20, -1, 0, true);
+
+    // Draw menu
+    this.menu.draw(g, a, x + MENU_X, y + MENU_Y, Y_OFF);
 }

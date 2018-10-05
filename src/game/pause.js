@@ -6,7 +6,7 @@
 
 
 // Constructor
-var Pause = function () {
+var Pause = function (game) {
 
     this.active = false;
 
@@ -18,8 +18,11 @@ var Pause = function () {
         "QUIT"
     ];
 
-    // Cursor position
-    this.cursor = 0;
+    // Menu
+    this.menu = new Menu(this.text,function(cursor, arr) {
+
+        arr[0].buttonEvent(cursor, arr[1]);
+    }, [this, game]);
 }
 
 
@@ -40,21 +43,15 @@ Pause.prototype.drawBox = function (g, a, w, h) {
     g.setGlobalColor(0, 0, 0);
     g.fillRect(x, y, w, h);
 
-    // Draw text
-    for(let i = 0; i < this.text.length; ++ i) {
-
-        g.drawText(a.bitmaps.font, 
-            (this.cursor == i ? ">" : "") + this.text[i], 
-            x + XPOS, y + Y_START + i*YOFF, 
-            -1, 0, false);
-    }
+    // Draw menu
+    this.menu.draw(g, a, x + XPOS, y + Y_START, YOFF);
 }
 
 
 // Button event
-Pause.prototype.buttonEvent = function(game) {
+Pause.prototype.buttonEvent = function(cursor, game) {
 
-    switch(this.cursor) {
+    switch(cursor) {
 
         // Resume
         case 0:
@@ -80,34 +77,12 @@ Pause.prototype.buttonEvent = function(game) {
 
 
 // Update
-Pause.prototype.update = function (vpad, game) {
-
-    const DELTA = 0.1;
+Pause.prototype.update = function (vpad) {
 
     if (!this.active) return;
 
-    // Move cursor
-    let dy = vpad.delta.y;
-    let sy = vpad.stick.y;
-
-    if(sy > DELTA && dy > DELTA)
-        ++ this.cursor;
-
-    else if(sy < -DELTA && dy < -DELTA)
-        -- this.cursor;
-
-    // Restrict
-    if(this.cursor < 0) 
-        this.cursor = this.text.length -1;
-    else if(this.cursor >= this.text.length) 
-        this.cursor = 0;
-
-    // Check accept button
-    if (vpad.buttons.confirm == State.Pressed
-     || vpad.buttons.fire1 == State.Pressed) {
-
-        this.buttonEvent(game);
-    }
+    // Update menu
+    this.menu.update(vpad);
 }
 
 
