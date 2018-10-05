@@ -65,14 +65,14 @@ Game.prototype.update = function (tm) {
     // Check game over
     if(this.gover.active) {
 
-        this.gover.update(this.vpad, this, tm);
+        this.gover.update(this.vpad);
         return;
     }
 
     // Check pause
     if(this.pause.active) {
 
-        this.pause.update(this.vpad, this);
+        this.pause.update(this.vpad);
         return;
     }
     else if(this.vpad.buttons.confirm == State.Pressed) {

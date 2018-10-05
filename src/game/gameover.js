@@ -4,6 +4,9 @@
  * @author Jani Nykänen
  */
 
+// Global contants
+const NAME_MAX_LENGTH = 7;
+
 
 // Constructor
 var GameOver = function(game) {
@@ -16,10 +19,15 @@ var GameOver = function(game) {
 
     // Is active
     this.active = false;
+    // "Phase"
+    this.phase = 0;
 
     // Distance string & valye
     this.distStr = "";
     this.dist = 0;
+
+    // Name string
+    this.name = "";
 
     // Menu
     this.menu = new Menu(TEXT, function(cursor, arr) {
@@ -36,6 +44,7 @@ GameOver.prototype.confirmEvent = function(cursor, game) {
 
     // Submit
     case 0:
+        ++ this.phase;
         break;
 
     // Play again
@@ -78,30 +87,77 @@ GameOver.prototype.drawBox = function (g, w, h) {
 GameOver.prototype.activate = function(hud) {
 
     this.active = true;
+    this.phase = 0;
 
     // Get distance info
     this.distStr = hud.getDistanceString(hud.dist, true);
 }
 
 
-// Update
-GameOver.prototype.update = function(vpad, game, tm) {
+// Get character input
+GameOver.prototype.getCharInput = function(vpad) {
+    
+    if(this.name.length < NAME_MAX_LENGTH) {
 
-    // Update menu
-    this.menu.update(vpad);
+        for(let i = 48; i <= 90; ++ i) {
+
+            // Skip between 0 and A
+            if(i > 57 && i < 65) continue;
+
+            // Check if pressed
+            if(vpad.input.keyStates[i] == State.Pressed) {
+
+                this.name += String.fromCharCode(i);
+                break;
+            }
+        }
+    }
+
+    // Check backspace
+    if(vpad.input.getKey(8) == State.Pressed 
+        && this.name.length > 0) {
+
+        this.name = this.name.substr(0, this.name.length -1);
+    }
 }
 
 
-// Draw
-GameOver.prototype.draw = function(g, a) {
+// Update
+GameOver.prototype.update = function(vpad) {
 
-    const BOX_HEIGHT = 80;
-    const BOX_WIDTH = 96;
+    // "Base"
+    if(this.phase == 0) {
+
+        // Update menu
+        this.menu.update(vpad);
+    }
+    // "Input"
+    else if(this.phase == 1) {
+
+        // Check escape
+        if(vpad.buttons.cancel == State.Pressed) {
+
+            this.phase = 0;
+        }
+        // Otherwise get char input
+        else {
+
+            this.getCharInput(vpad);
+        }
+    }
+}
+
+
+// Draw base aka phase 0
+GameOver.prototype.drawBase = function(g, a) {
 
     const GAME_OVER_Y = 2;
     const MENU_Y = 36;
     const MENU_X = - 48;
     const Y_OFF = 14;
+
+    const BOX_HEIGHT = 80;
+    const BOX_WIDTH = 96;
 
     // Draw background box
     this.drawBox(g, BOX_WIDTH, BOX_HEIGHT);
@@ -117,4 +173,40 @@ GameOver.prototype.draw = function(g, a) {
 
     // Draw menu
     this.menu.draw(g, a, x + MENU_X, y + MENU_Y, Y_OFF);
+}
+
+
+// Draw input box aka phase 1
+GameOver.prototype.drawInputBox = function(g, a) {
+
+    const TITLE_Y = 2;
+    const YOFF = 14;
+    const XOFF = 10;
+
+    const BOX_HEIGHT = 32;
+    const BOX_WIDTH = 80;
+
+    // Draw background box
+    this.drawBox(g, BOX_WIDTH, BOX_HEIGHT);
+
+    // Draw title
+    let x = 64;
+    let y = 64 - BOX_HEIGHT/2 + TITLE_Y;
+    g.drawText(a.bitmaps.font, "YOUR NAME:", x, y, -1, 0, true);
+
+    // Draw name input
+    let s = this.name.length < NAME_MAX_LENGTH ? this.name + "_" : this.name;
+    g.drawText(a.bitmaps.font, s, 
+        x-BOX_WIDTH/2 + XOFF, y + YOFF, 
+        -1, 0, false);
+}
+
+
+// Draw
+GameOver.prototype.draw = function(g, a) {
+
+    if(this.phase == 0)
+        this.drawBase (g, a);
+    else
+        this.drawInputBox (g, a);
 }
