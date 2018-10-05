@@ -38,6 +38,9 @@ var InputManager = function () {
 
         this.keyStates[i] = State.Up;
     }
+
+    // Any key pressed
+    this.anyKeyPressed = false;
 }
 
 
@@ -49,6 +52,7 @@ InputManager.prototype.keyPressed = function (key) {
         return;
 
     this.keyStates[key] = State.Pressed;
+    this.anyKeyPressed = true;
 }
 
 
@@ -65,6 +69,8 @@ InputManager.prototype.keyReleased = function (key) {
 
 // Update input manager
 InputManager.prototype.update = function() {
+
+    this.anyKeyPressed = false;
 
     // Update key states
     for(let i = 0; i < this.keyStates.length; ++ i) {

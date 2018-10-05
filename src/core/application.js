@@ -45,7 +45,7 @@ var Application = function() {
 // Add a scene
 Application.prototype.addScene = function(scene, global, active) {
 
-    this.scenes.push(scene);
+    this.scenes[scene.name] = scene;
 
     if(global) {
 
@@ -56,6 +56,21 @@ Application.prototype.addScene = function(scene, global, active) {
 
         this.activeScene = scene;
     }
+}
+
+
+// Change scene
+Application.prototype.changeScene = function(target) {
+
+    let s = this.scenes[target];
+
+    if(s == null) return;
+
+    if(s.onChange != null) {
+
+        s.onChange();
+    }
+    this.activeScene = s;
 }
 
 

@@ -65,7 +65,7 @@ Game.prototype.update = function (tm) {
     // Check game over
     if(this.gover.active) {
 
-        this.gover.update(this.vpad);
+        this.gover.update(this.vpad, this);
         return;
     }
 
@@ -156,4 +156,12 @@ Game.prototype.draw = function (g) {
         this.gover.draw(g, this.assets);
     }
 
+}
+
+
+// On change
+Game.prototype.onChange = function() {
+
+    // Reset
+    this.reset();
 }

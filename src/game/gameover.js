@@ -99,6 +99,7 @@ GameOver.prototype.getCharInput = function(vpad) {
     
     if(this.name.length < NAME_MAX_LENGTH) {
 
+        // From 0 to Z
         for(let i = 48; i <= 90; ++ i) {
 
             // Skip between 0 and A
@@ -123,7 +124,7 @@ GameOver.prototype.getCharInput = function(vpad) {
 
 
 // Update
-GameOver.prototype.update = function(vpad) {
+GameOver.prototype.update = function(vpad, game) {
 
     // "Base"
     if(this.phase == 0) {
@@ -143,6 +144,14 @@ GameOver.prototype.update = function(vpad) {
         else {
 
             this.getCharInput(vpad);
+        }
+
+        // If accepted
+        if(vpad.buttons.confirm == State.Pressed 
+            && this.name.length > 0) {
+
+            // Go to the leaderboards scene
+            game.app.changeScene("leaderboard");
         }
     }
 }

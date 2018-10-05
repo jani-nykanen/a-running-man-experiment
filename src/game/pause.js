@@ -66,9 +66,12 @@ Pause.prototype.buttonEvent = function(cursor, game) {
             break;
         // Audio
         case 2:
+
         // Exit
         case 3:
-            // ...
+            game.global.trans.activate(2.0, Mode.In, function() {
+                appRef.changeScene("title");
+            });
             break;
 
         

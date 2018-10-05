@@ -27,6 +27,7 @@ let assetInfo = {
         checkpoint: "checkpoint.png",
         enemies: "enemies.png",
         ready: "ready.png",
+        logo: "logo.png",
     }
 };
 
@@ -50,6 +51,8 @@ function main() {
 
             app.addScene(new Global(app), true);
             app.addScene(new Game(app), false, true);
+            app.addScene(new Leaderboard(app), false);
+            app.addScene(new Title(app), false);
         },
         buttonList);
 }
