@@ -76,12 +76,11 @@ EnemyGen.prototype.getNextEnemyIndex = function() {
 // Create an enemy
 EnemyGen.prototype.createEnemy = function(x, y, z, w, phase) {
 
-    const MAX_ID = 6;
-
     // Check if skip
+    let p = (phase / 2) | 0;
     if(Math.random() <= 1.0 / this.skipProb) {
 
-        if(this.skipProb < ENEMY_SKIP_PROB_MAX)
+        if(this.skipProb < ENEMY_SKIP_PROB_MAX + p)
             ++ this.skipProb;
 
         return;
@@ -89,12 +88,11 @@ EnemyGen.prototype.createEnemy = function(x, y, z, w, phase) {
     else {
 
         -- this.skipProb ;
-        if(this.skipProb < ENEMY_SKIP_PROB_MIN)
-            this.skipProb = ENEMY_SKIP_PROB_MIN;
+        if(this.skipProb < ENEMY_SKIP_PROB_MIN + p)
+            this.skipProb = ENEMY_SKIP_PROB_MIN + p;
     }
 
     let i = this.getNextEnemyIndex();
-  //  let id = (Math.random() * MAX_ID) | 0;
     let id = this.getEnemyTypeByProbability(Math.random(), phase);
 
     // Determine parameters

@@ -48,7 +48,7 @@ Checkpoint.prototype.createSelf = function (x, y, z, interval) {
 // Update
 Checkpoint.prototype.update = function (pl, hud, near, far, tm) {
 
-    const TIME_BONUS = 30.0;
+    const TIME_BONUS = 20.0;
     const MESSAGE_TIME = 120.0;
 
     if(!this.exist) return;
