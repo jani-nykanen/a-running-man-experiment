@@ -45,7 +45,7 @@ Leaderboard.prototype.sendRequest = function(params, cb) {
     const URL = "https://game-leaderboards.000webhostapp.com/runningman/"
 
     let url = URL + "?" + params;
-
+    
     this.fetching = true;
 
     let xmlHttp = new XMLHttpRequest();
@@ -54,7 +54,6 @@ Leaderboard.prototype.sendRequest = function(params, cb) {
 
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 
-            console.log(xmlHttp.responseText);
             // Parse response
             let s = xmlHttp.responseText.split('|');
             let success = s[0] == "true";

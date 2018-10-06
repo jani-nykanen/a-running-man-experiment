@@ -155,7 +155,7 @@ GameOver.prototype.update = function(vpad, game) {
 
             // Send score
             game.app.scenes.leaderboard.sendScore(this.name, 
-                this.dist)
+                game.hud.dist);
 
             // Go to the leaderboards scene
             game.app.changeScene("leaderboard");
