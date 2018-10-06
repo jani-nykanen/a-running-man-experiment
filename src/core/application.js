@@ -25,6 +25,7 @@ var Application = function() {
     // Create components
     this.graphics = new Graphics(CANVAS_NAME);
     this.input = new InputManager();
+    this.audio = new Audio();
     
     // Center the canvas
     this.graphics.centerCanvas(window.innerWidth, window.innerHeight);

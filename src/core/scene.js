@@ -17,5 +17,6 @@ var Scene = function(arg) {
     this.assets = app.assets;
     this.vpad = app.vpad;
     this.global = app.globalScene;
+    this.audio = app.audio;
     this.app = app;
 }

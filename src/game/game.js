@@ -70,7 +70,7 @@ Game.prototype.update = function (tm) {
     // Check pause
     if(this.pause.active) {
 
-        this.pause.update(this.vpad);
+        this.pause.update(this.vpad, this.audio);
         return;
     }
     else if(!this.player.dying

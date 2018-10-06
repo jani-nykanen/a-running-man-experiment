@@ -57,8 +57,9 @@ Title.prototype.confirmEvent = function(cursor, t) {
         });
         break;
 
-    // Audio on
+    // Audio on/off
     case 2:
+        t.audio.toggle(!t.audio.enabled);
         break;
 
     default:
@@ -87,6 +88,10 @@ Title.prototype.update = function(tm) {
     }
     else {
         
+        // Get audio state
+        this.menu.text[2] = this.audio.enabled ? "AUDIO: ON" : "AUDIO: OFF";
+
+        // Update menu
         this.menu.update(this.vpad);
     }
 }

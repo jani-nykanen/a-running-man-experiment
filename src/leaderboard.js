@@ -127,7 +127,6 @@ Leaderboard.prototype.sendScore = function(name, score) {
                     && Math.abs(ref.scores[i].value*10 - score) < 0.1) {
 
                     ref.addedIndex = i;
-                    console.log(i);
                 }
             }
         }

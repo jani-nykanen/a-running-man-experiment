@@ -64,8 +64,11 @@ Pause.prototype.buttonEvent = function(cursor, game) {
                 game.reset();
             });
             break;
+
         // Audio
         case 2:
+            game.audio.toggle(!game.audio.enabled);
+            break;
 
         // Exit
         case 3:
@@ -80,9 +83,12 @@ Pause.prototype.buttonEvent = function(cursor, game) {
 
 
 // Update
-Pause.prototype.update = function (vpad) {
+Pause.prototype.update = function (vpad, audio) {
 
     if (!this.active) return;
+
+    // Get audio state
+    this.menu.text[2] = audio.enabled ? "AUDIO: ON" : "AUDIO: OFF";
 
     // Update menu
     this.menu.update(vpad);
