@@ -36,9 +36,8 @@ var Leaderboard = function(app) {
     // Is fetching
     this.fetching = false;
 
-    // Added score
-    this.addedName = "";
-    this.addedScore = -1;
+    // Added score index
+    this.addedIndex = 0;
 }
 Leaderboard.prototype = Object.create(Scene.prototype);
 
@@ -96,6 +95,7 @@ Leaderboard.prototype.fetchScores = function() {
 
             // Save scores
             ref.setScores(data);
+            
         }
     });
 }
@@ -106,9 +106,6 @@ Leaderboard.prototype.sendScore = function(name, score) {
 
     score = (score*10) | 0;
     let check = md5(GLOBAL_KEY + String(score));
-
-    this.addedName = name;
-    this.addedScore = score;
 
     let ref = this;
     this.sendRequest("mode=set&name=" + name + "&score=" + String(score) + "&check=" + check, 
@@ -122,6 +119,17 @@ Leaderboard.prototype.sendScore = function(name, score) {
 
             // Save scores
             ref.setScores(data);
+
+            // Check index
+            for(let i = 0; i < ref.scores.length; ++ i) {
+
+                if(ref.scores[i].name == name
+                    && Math.abs(ref.scores[i].value*10 - score) < 0.1) {
+
+                    ref.addedIndex = i;
+                    console.log(i);
+                }
+            }
         }
     });
 }
@@ -190,7 +198,7 @@ Leaderboard.prototype.draw = function(g) {
         for(let i = 0; i < NAME_COUNT; ++ i) {
 
             bmp = f1;
-            if((this.scores[i]*10)|0 == this.addedScore && this.scores[i].name == this.addedName)
+            if(i == this.addedIndex)
                 bmp = f2;
 
             // Names
@@ -212,6 +220,5 @@ Leaderboard.prototype.draw = function(g) {
 Leaderboard.prototype.onChange = function(scene) {
 
     this.returnScene = scene;
-    this.addedScore = -1;
-    this.addedName = "";
+    this.addedIndex = -1;
 }
