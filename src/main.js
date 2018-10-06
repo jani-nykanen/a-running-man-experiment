@@ -29,6 +29,7 @@ let assetInfo = {
         ready: "ready.png",
         logo: "logo.png",
         creator: "creator.png",
+        fontYellow: "font_yellow.png",
     }
 };
 

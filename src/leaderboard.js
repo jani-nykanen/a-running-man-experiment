@@ -35,6 +35,10 @@ var Leaderboard = function(app) {
 
     // Is fetching
     this.fetching = false;
+
+    // Added score
+    this.addedName = "";
+    this.addedScore = -1;
 }
 Leaderboard.prototype = Object.create(Scene.prototype);
 
@@ -103,6 +107,9 @@ Leaderboard.prototype.sendScore = function(name, score) {
     score = (score*10) | 0;
     let check = md5(GLOBAL_KEY + String(score));
 
+    this.addedName = name;
+    this.addedScore = score;
+
     let ref = this;
     this.sendRequest("mode=set&name=" + name + "&score=" + String(score) + "&check=" + check, 
         function(success, data) {
@@ -156,7 +163,8 @@ Leaderboard.prototype.draw = function(g) {
     // TODO: Constants vs numeric constants
 
     const NAME_COUNT = 10;
-    const f = this.assets.bitmaps.font;
+    const f1 = this.assets.bitmaps.font;
+    const f2 = this.assets.bitmaps.fontYellow;
 
     // Draw background box
     g.clearScreen(255, 255, 255);
@@ -168,30 +176,35 @@ Leaderboard.prototype.draw = function(g) {
     g.fillRect(2, 2, 128-4, 128- 4);
     
     // Draw title
-    g.drawText(f, "LEADERBOARD", 64, 4, -1, 0, true);
+    g.drawText(f1, "LEADERBOARD", 64, 4, -1, 0, true);
 
     // Draw "fetching"
     if(this.fetching) {
 
-        g.drawText(f, "FETCHING...", 64, 64-4, -1, 0, true);
+        g.drawText(f1, "FETCHING...", 64, 64-4, -1, 0, true);
     }
     else {
 
+        let bmp = null;
         // Draw names
         for(let i = 0; i < NAME_COUNT; ++ i) {
 
+            bmp = f1;
+            if((this.scores[i]*10)|0 == this.addedScore && this.scores[i].name == this.addedName)
+                bmp = f2;
+
             // Names
-            g.drawText(f,this.scores[i].name, 4, 16 + i*9, -1, 0, false);
+            g.drawText(bmp,this.scores[i].name, 4, 16 + i*9, -1, 0, false);
 
             // Scores
-            g.drawText(f,this.getDistanceString(this.scores[i].value),
+            g.drawText(bmp,this.getDistanceString(this.scores[i].value),
                 64, 16 + i*9, -1, 0, false);
         }
 
     }
 
     // Draw "Press enter"
-    g.drawText(f, "PRESS ENTER", 64, 128-14, -1, 0, true);
+    g.drawText(f1, "PRESS ENTER", 64, 128-14, -1, 0, true);
 }
 
 
@@ -199,4 +212,6 @@ Leaderboard.prototype.draw = function(g) {
 Leaderboard.prototype.onChange = function(scene) {
 
     this.returnScene = scene;
+    this.addedScore = -1;
+    this.addedName = "";
 }
