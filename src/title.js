@@ -52,6 +52,7 @@ Title.prototype.confirmEvent = function(cursor, t) {
         
         t.global.trans.activate(2.0, Mode.In, function() {
 
+            t.app.scenes.leaderboard.fetchScores();
             t.app.changeScene("leaderboard");
         });
         break;
@@ -114,6 +115,8 @@ Title.prototype.draw = function(g) {
     else {
 
         // Draw menu
-        this.menu.draw(g, this.assets, 16, 64, 14);
+        this.menu.draw(g, this.assets, 16, 64, 14, 
+            this.global.trans.active && this.global.trans.mode == Mode.In,
+            this.global.trans.timer);
     }
 }

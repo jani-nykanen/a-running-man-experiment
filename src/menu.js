@@ -51,10 +51,15 @@ Menu.prototype.update = function(vpad) {
 
 
 // Draw
-Menu.prototype.draw = function(g, a, x, y, yoff) {
+Menu.prototype.draw = function(g, a, x, y, yoff, flicker, t) {
 
     // Draw text
     for(let i = 0; i < this.text.length; ++ i) {
+
+        if(flicker && (
+            i != this.cursor ||
+            Math.floor(t/4) % 2 == 0
+            )) continue;
 
         g.drawText(a.bitmaps.font, 
             (this.cursor == i ? ">" : "") + this.text[i], 

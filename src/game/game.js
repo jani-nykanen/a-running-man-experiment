@@ -73,7 +73,8 @@ Game.prototype.update = function (tm) {
         this.pause.update(this.vpad);
         return;
     }
-    else if(this.vpad.buttons.confirm == State.Pressed) {
+    else if(!this.player.dying
+        && this.vpad.buttons.confirm == State.Pressed) {
 
         this.pause.active = true;
         return;

@@ -153,6 +153,10 @@ GameOver.prototype.update = function(vpad, game) {
         if(vpad.buttons.confirm == State.Pressed 
             && this.name.length > 0) {
 
+            // Send score
+            game.app.scenes.leaderboard.sendScore(this.name, 
+                this.dist)
+
             // Go to the leaderboards scene
             game.app.changeScene("leaderboard");
         }

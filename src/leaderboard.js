@@ -4,14 +4,15 @@
  * @author Jani Nykänen
  */
 
+// Global key
+let GLOBAL_KEY = "tmpkey123";
+
 
 // Score entry constructor
 var ScoreEntry = function(name, score) {
 
     this.name = name;
     this.value = score;
-
-    this.returnScene = null;
 }
 
 
@@ -26,11 +27,98 @@ var Leaderboard = function(app) {
     this.scores = new Array(SCORE_MAX);
     for(let i = 0; i < this.scores.length; ++ i) {
 
-        this.scores[i] = new ScoreEntry("NOBODY" + String(i),1000- i*100);
+        this.scores[i] = new ScoreEntry("", 0);
     }
 
+    // "Return" scene
+    this.returnScene = null;
+
+    // Is fetching
+    this.fetching = false;
 }
 Leaderboard.prototype = Object.create(Scene.prototype);
+
+
+// Send request
+Leaderboard.prototype.sendRequest = function(params, cb) {
+
+    const URL = "https://game-leaderboards.000webhostapp.com/runningman/"
+
+    let url = URL + "?" + params;
+
+    this.fetching = true;
+
+    let xmlHttp = new XMLHttpRequest();
+    let ref = this;
+    xmlHttp.onreadystatechange = function() { 
+
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+            console.log(xmlHttp.responseText);
+            // Parse response
+            let s = xmlHttp.responseText.split('|');
+            let success = s[0] == "true";
+
+            ref.fetching = false;
+            cb(success, s.slice(1, s.length));
+        }
+    }
+    xmlHttp.open("GET", url, true);
+    xmlHttp.send(null);
+}
+
+
+// Set scores
+Leaderboard.prototype.setScores = function(data) {
+
+    for(var i = 0; i < data.length; i += 2) {
+
+        this.scores[i/2].name = data[i];
+        this.scores[i/2].value = parseInt(data[i+1]) / 10.0;
+    }
+}
+
+
+// Fetch scores
+Leaderboard.prototype.fetchScores = function() {
+
+    let ref = this;
+    this.sendRequest("mode=get", function(success, data) {
+
+        if(!success) {
+
+            console.log("ERROR: " + data[0]);
+        }
+        else {
+
+            // Save scores
+            ref.setScores(data);
+        }
+    });
+}
+
+
+// Send a score
+Leaderboard.prototype.sendScore = function(name, score) {
+
+    score = (score*10) | 0;
+    let check = md5(GLOBAL_KEY + String(score));
+
+    let ref = this;
+    this.sendRequest("mode=set&name=" + name + "&score=" + String(score) + "&check=" + check, 
+        function(success, data) {
+
+        if(!success) {
+
+            console.log("ERROR: " + data[0]);
+        }
+        else {
+
+            // Save scores
+            ref.setScores(data);
+        }
+    });
+}
 
 
 // Get distance string
@@ -83,15 +171,24 @@ Leaderboard.prototype.draw = function(g) {
     // Draw title
     g.drawText(f, "LEADERBOARD", 64, 4, -1, 0, true);
 
-    // Draw names
-    for(let i = 0; i < NAME_COUNT; ++ i) {
+    // Draw "fetching"
+    if(this.fetching) {
 
-        // Names
-        g.drawText(f,this.scores[i].name, 4, 16 + i*9, -1, 0, false);
+        g.drawText(f, "FETCHING...", 64, 64-4, -1, 0, true);
+    }
+    else {
 
-        // Scores
-        g.drawText(f,this.getDistanceString(this.scores[i].value),
-            64, 16 + i*9, -1, 0, false);
+        // Draw names
+        for(let i = 0; i < NAME_COUNT; ++ i) {
+
+            // Names
+            g.drawText(f,this.scores[i].name, 4, 16 + i*9, -1, 0, false);
+
+            // Scores
+            g.drawText(f,this.getDistanceString(this.scores[i].value),
+                64, 16 + i*9, -1, 0, false);
+        }
+
     }
 
     // Draw "Press enter"
