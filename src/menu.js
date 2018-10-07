@@ -21,10 +21,11 @@ var Menu = function(text, cb, params) {
 
 
 // Update
-Menu.prototype.update = function(vpad) {
+Menu.prototype.update = function(vpad, audio, a) {
 
     const DELTA = 0.1;
     
+    let old = this.cursor;
     // Move cursor
     let dy = vpad.delta.y;
     let sy = vpad.stick.y;
@@ -34,6 +35,12 @@ Menu.prototype.update = function(vpad) {
 
     else if(sy < -DELTA && dy < -DELTA)
         -- this.cursor;
+
+    // Cursor moved, play sound effect
+    if(old != this.cursor) {
+
+        audio.playSample(a.audio.choose, 0.6);
+    }
 
     // Restrict
     if(this.cursor < 0) 
@@ -45,6 +52,7 @@ Menu.prototype.update = function(vpad) {
     if (vpad.buttons.confirm == State.Pressed
         || vpad.buttons.fire1 == State.Pressed) {
    
+         audio.playSample(a.audio.select, 0.6);
         this.cb(this.cursor, this.params);
     }
 }

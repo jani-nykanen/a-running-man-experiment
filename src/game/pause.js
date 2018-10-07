@@ -83,15 +83,22 @@ Pause.prototype.buttonEvent = function(cursor, game) {
 
 
 // Update
-Pause.prototype.update = function (vpad, audio) {
+Pause.prototype.update = function (vpad, audio, a) {
 
     if (!this.active) return;
 
     // Get audio state
     this.menu.text[2] = audio.enabled ? "AUDIO: ON" : "AUDIO: OFF";
 
+    // Cancel
+    if(vpad.buttons.cancel == State.Pressed) {
+
+        this.active = false;
+        return;
+    }
+
     // Update menu
-    this.menu.update(vpad);
+    this.menu.update(vpad, audio, a);
 }
 
 

@@ -70,7 +70,7 @@ Game.prototype.update = function (tm) {
     // Check pause
     if(this.pause.active) {
 
-        this.pause.update(this.vpad, this.audio);
+        this.pause.update(this.vpad, this.audio, this.assets);
         return;
     }
     else if(!this.player.dying
@@ -94,7 +94,9 @@ Game.prototype.update = function (tm) {
     this.checkpoint.update(this.player, this.hud, NEAR, FAR, tm);
 
     // Update HUD
-    this.hud.update(this.player, this.checkpoint, this.gover, tm);
+    if(!this.global.trans.active)
+        this.hud.update(this.player, this.checkpoint, this.gover, 
+            this.audio, this.assets, tm);
 
     // TEMP
     /*

@@ -13,12 +13,11 @@ var HUD = function () {
 
     const INITIAL_TIME_SECONDS = 60.0;
     const START_TIME = 60.0 * 4;
-    const GUIDE_TIME = 60.0;
 
     // Distance
     this.dist = 0.0;
     // To checkpoint
-    this.checkpointDist = 500.0;
+    this.checkpointDist = 200.0;
     // Time
     this.time = INITIAL_TIME_SECONDS * 60.0;
 
@@ -129,7 +128,7 @@ HUD.prototype.drawStartTime = function (g, a) {
 
 
 // Update
-HUD.prototype.update = function (pl, checkpoint, gover, tm) {
+HUD.prototype.update = function (pl, checkpoint, gover, audio, a, tm) {
 
     const METRE = 3.0;
     const FUEL_DELTA_SPEED = 0.005;
@@ -142,7 +141,16 @@ HUD.prototype.update = function (pl, checkpoint, gover, tm) {
     // Update start timer
     if (this.startTimer > 0.0) {
 
+        let old = (this.startTimer / 60.0) | 0;
         this.startTimer -= 1.0 * tm;
+        let n = (this.startTimer / 60.0) | 0;
+
+        // Play beep if changed
+        if(old != n) {
+
+            audio.playSample(n == 0 ? a.audio.go : a.audio.ready, 0.60);
+        }
+
         return;
     }
     // Update guide time

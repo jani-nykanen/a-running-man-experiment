@@ -132,8 +132,17 @@ GameOver.prototype.update = function(vpad, game) {
     // "Base"
     if(this.phase == 0) {
 
+        // Cancel
+        if(vpad.buttons.cancel == State.Pressed) {
+
+            game.global.trans.activate(2.0, Mode.In, function() {
+                game.reset();
+            });
+            return;
+        }
+
         // Update menu
-        this.menu.update(vpad);
+        this.menu.update(vpad, game.audio, game.assets);
     }
     // "Input"
     else if(this.phase == 1) {

@@ -10,7 +10,7 @@ let assRef = null;
 
 
 // Constructor
-var AssetPack = function(bmpList, bmpPath) {
+var AssetPack = function(bmpList, bmpPath, audioList, audioPath) {
 
     // How many files loaded
     this.loaded = 0;
@@ -25,9 +25,15 @@ var AssetPack = function(bmpList, bmpPath) {
     assRef = this;
 
     // Set bitmaps to be loaded
-    for(var k in bmpList) {
+    for(let k in bmpList) {
 
         this.loadBitmap(k, bmpPath + "/" + bmpList[k]);
+    }
+
+    // Set audio to be loaded
+    for(let k in audioList) {
+
+        this.loadSound(k, audioPath + "/" + audioList[k]);
     }
 }
 
@@ -37,13 +43,28 @@ AssetPack.prototype.loadBitmap = function(name, url) {
 
     ++ this.total;
 
-    var image = new Image();
+    let image = new Image();
     image.onload = function() {
 
         ++ assRef.loaded;
     }
     image.src = url;
-    assRef.bitmaps[name] = image;
+    this.bitmaps[name] = image;
+}
+
+
+// Load a sound
+AssetPack.prototype.loadSound = function(name, url) {
+
+    ++ this.total;
+
+    this.audio[name] = new Howl({
+        src: [url],
+        onload: function() {
+
+            ++ assRef.loaded;
+        }
+    });
 }
 
 

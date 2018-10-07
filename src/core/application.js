@@ -89,7 +89,8 @@ Application.prototype.init = function(assetInfo, buttonList) {
     this.vpad = new Vpad(buttonList, this.input);
 
     // Load assets
-    this.assets = new AssetPack(assetInfo.bitmaps, assetInfo.bitmapPath);
+    this.assets = new AssetPack(assetInfo.bitmaps, assetInfo.bitmapPath,
+        assetInfo.audio, assetInfo.audioPath);
 }
 
 

@@ -31,7 +31,18 @@ let assetInfo = {
         creator: "creator.png",
         fontYellow: "font_yellow.png",
         guide: "guide.png",
-    }
+    },
+
+    audioPath: "assets/audio/",
+    audio: {
+
+        select: "select.wav",
+        choose: "choose.wav",
+        cancel: "cancel.wav",
+        start: "start.wav",
+        ready: "ready.wav",
+        go: "go.wav",
+    },
 };
 
 // Buttons

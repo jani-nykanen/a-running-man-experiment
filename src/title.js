@@ -83,6 +83,7 @@ Title.prototype.update = function(tm) {
          // Confirm pressed
         if(this.vpad.buttons.confirm == State.Pressed) {
 
+            this.audio.playSample(this.assets.audio.start, 0.60);
             ++ this.phase;
         }
     }
@@ -92,7 +93,7 @@ Title.prototype.update = function(tm) {
         this.menu.text[2] = this.audio.enabled ? "AUDIO: ON" : "AUDIO: OFF";
 
         // Update menu
-        this.menu.update(this.vpad);
+        this.menu.update(this.vpad, this.audio, this.assets);
     }
 }
 
