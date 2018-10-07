@@ -73,6 +73,8 @@ var Player = function (z) {
 
     // Hurt played
     this.hurtPlayed = false;
+    // Death played
+    this.deathPlayed = false;
 }
 
 
@@ -404,6 +406,13 @@ Player.prototype.update = function (vpad, camX, audio, a, tm) {
 
     if(this.dying) {
 
+        // If not death played
+        if(!this.deathPlayed) {
+
+            audio.playSample(a.audio.loser, 0.60);
+            this.deathPlayed = true;
+        }
+
         this.flashTimer = 0.0;
         this.hurtTimer = 0.0;
         this.healTimer = 0.0;
@@ -485,20 +494,23 @@ Player.prototype.draw = function (g, a) {
 
     // Draw sprite
     let r = this.spr.row;
-    if(this.hurtTimer > 0.0 
-        && Math.floor(this.hurtTimer/2) % 2 == 0) {
+    if(!this.dying) {
 
-        this.spr.row += 4;
-    }
-    else if(this.flashTimer > 0.0 
-        && Math.floor(this.flashTimer/2) % 2 == 0) {
+        if(this.hurtTimer > 0.0 
+            && Math.floor(this.hurtTimer/2) % 2 == 0) {
 
-        this.spr.row += 2;
-    }
-    else if(this.healTimer > 0.0 
-        && Math.floor(this.healTimer/2) % 2 == 0) {
+            this.spr.row += 4;
+        }
+        else if(this.flashTimer > 0.0 
+            && Math.floor(this.flashTimer/2) % 2 == 0) {
 
-        this.spr.row += 6;
+            this.spr.row += 2;
+        }
+        else if(this.healTimer > 0.0 
+            && Math.floor(this.healTimer/2) % 2 == 0) {
+
+            this.spr.row += 6;
+        }
     }
     this.spr.draw(g, a.bitmaps.player, p.x - 12, p.y - 20 + yplus, this.flip);
     this.spr.row = r;
@@ -579,4 +591,5 @@ Player.prototype.die = function(t) {
     this.dying = true;  
     this.deathType = t;
     this.speed.y = -FLY_HEIGHT;
+    this.deathPlayed = false;
 }

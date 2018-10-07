@@ -46,7 +46,7 @@ Checkpoint.prototype.createSelf = function (x, y, z, interval) {
 
 
 // Update
-Checkpoint.prototype.update = function (pl, hud, near, far, tm) {
+Checkpoint.prototype.update = function (pl, hud, near, far, audio, a, tm) {
 
     const TIME_BONUS = 20.0;
     const MESSAGE_TIME = 120.0;
@@ -75,6 +75,9 @@ Checkpoint.prototype.update = function (pl, hud, near, far, tm) {
         hud.addTime(TIME_BONUS);
         this.interval += this.initialInterval;
         this.triggered = true; 
+
+        // Play sound
+        audio.playSample(a.audio.go, 0.60);
     }
 
     // If near enough, move forward

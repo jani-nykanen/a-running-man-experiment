@@ -52,6 +52,9 @@ JumpingSlime.prototype.onUpdate = function(pl, audio, a, tm) {
         if(this.jumpTimer <= 0.0) {
 
             this.speed.y = -(Math.random() * (JUMP_MAX-JUMP_MIN) + JUMP_MIN);
+
+            // Play sound
+            audio.playSample(a.audio.jump2, 0.55);
         }
     }
 }

@@ -162,6 +162,8 @@ GameOver.prototype.update = function(vpad, game) {
         if(vpad.buttons.confirm == State.Pressed 
             && this.name.length > 0) {
 
+            game.audio.playSample(game.assets.audio.select, 0.60);
+
             // Go to the leaderboards scene
             game.app.changeScene("leaderboard");
 

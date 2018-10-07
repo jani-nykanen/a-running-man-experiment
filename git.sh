@@ -6,3 +6,4 @@ git add README.md
 git add index.html
 git add style.css
 git add server
+git add dist.sh

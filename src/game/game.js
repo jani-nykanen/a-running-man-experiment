@@ -92,7 +92,7 @@ Game.prototype.update = function (tm) {
     this.bg.update(this.player.speed.z, tm);
 
     // Update checkpoint
-    this.checkpoint.update(this.player, this.hud, NEAR, FAR, tm);
+    this.checkpoint.update(this.player, this.hud, NEAR, FAR, this.audio, this.assets, tm);
 
     // Update HUD
     if(!this.global.trans.active) {
