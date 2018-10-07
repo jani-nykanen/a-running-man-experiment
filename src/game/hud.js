@@ -4,12 +4,16 @@
  * @author Jani Nykänen
  */
 
+// Global constants
+const HUD_GUIDE_TIME = 30.0;
+
 
 // Constructor
 var HUD = function () {
 
     const INITIAL_TIME_SECONDS = 60.0;
     const START_TIME = 60.0 * 4;
+    const GUIDE_TIME = 60.0;
 
     // Distance
     this.dist = 0.0;
@@ -32,6 +36,8 @@ var HUD = function () {
 
     // Start timer (3,2,1, GO)
     this.startTimer = START_TIME;
+    // Guide timer
+    this.guideTimer = HUD_GUIDE_TIME;
 }
 
 
@@ -139,6 +145,11 @@ HUD.prototype.update = function (pl, checkpoint, gover, tm) {
         this.startTimer -= 1.0 * tm;
         return;
     }
+    // Update guide time
+    else if(this.guideTimer > 0.0) {
+
+        this.guideTimer -= 1.0 * tm;
+    }
 
     // Update time
     if (!pl.dying)
@@ -195,6 +206,32 @@ HUD.prototype.update = function (pl, checkpoint, gover, tm) {
 }
 
 
+// Draw guide
+HUD.prototype.drawGuide = function(g, a) {
+
+    const XOFF = 26;
+    const YPOS = 24;
+    const YOFF = 24;
+
+    let bmp = a.bitmaps.guide;
+
+    let t = this.guideTimer / HUD_GUIDE_TIME;
+
+    let x1 = -24 + XOFF*t;
+    let x2 = 128 - XOFF*t;
+    
+    // Left
+    g.drawBitmapRegion(bmp, 0, 0, 24, 24, x1, YPOS, 0);
+    g.drawBitmapRegion(bmp, 24, 0, 24, 24, x1, YPOS + YOFF, 0);
+    g.drawBitmapRegion(bmp, 96, 0, 24, 24, x1, YPOS + YOFF*2, 0);
+
+    // Right
+    g.drawBitmapRegion(bmp, 48, 0, 24, 24, x2, YPOS, 0);
+    g.drawBitmapRegion(bmp, 72, 0, 24, 24, x2, YPOS + YOFF, 0);
+
+}
+
+
 // Draw
 HUD.prototype.draw = function (g, a) {
 
@@ -211,6 +248,12 @@ HUD.prototype.draw = function (g, a) {
     if (this.startTimer > 0.0) {
 
         this.drawStartTime(g, a);
+    }
+
+    // Draw guide
+    if(this.guideTimer > 0.0) {
+
+        this.drawGuide(g, a);
     }
 }
 

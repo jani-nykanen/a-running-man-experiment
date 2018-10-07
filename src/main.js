@@ -30,6 +30,7 @@ let assetInfo = {
         logo: "logo.png",
         creator: "creator.png",
         fontYellow: "font_yellow.png",
+        guide: "guide.png",
     }
 };
 
