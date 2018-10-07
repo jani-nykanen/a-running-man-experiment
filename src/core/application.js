@@ -147,7 +147,8 @@ Application.prototype.loop = function(ts) {
     while(this.assets.hasLoaded && this.timeSum >= target) {
 
         // Update global scene
-        if(this.globalScene != null &&
+        if(this.assets.hasLoaded()
+        && this.globalScene != null &&
             this.globalScene.update != null) {
 
             this.globalScene.update(tm);

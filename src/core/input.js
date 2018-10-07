@@ -26,11 +26,19 @@ var InputManager = function () {
 
     // Set callback functions
     window.addEventListener("keydown", function(e) {
+        e.preventDefault();
         inputManRef.keyPressed(e.keyCode);
     });
     window.addEventListener("keyup", function(e) {
+        e.preventDefault();
         inputManRef.keyReleased(e.keyCode);
     });
+
+    // Disable mouse
+    window.addEventListener("mousedown", function(e) {
+        window.focus();
+        e.preventDefault();
+    })
 
     // Key states
     this.keyStates = new Array(KEY_STATE_MAX);

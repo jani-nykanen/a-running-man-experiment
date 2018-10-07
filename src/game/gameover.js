@@ -135,6 +135,7 @@ GameOver.prototype.update = function(vpad, game) {
         // Cancel
         if(vpad.buttons.cancel == State.Pressed) {
 
+            game.audio.playSample(game.assets.audio.cancel, 0.60);
             game.global.trans.activate(2.0, Mode.In, function() {
                 game.reset();
             });
