@@ -36,7 +36,7 @@ var Graphics = function (canvasName) {
     // Get canvas & context
     this.canvas = document.getElementById(canvasName);
     this.ctx = this.canvas.getContext("2d");
-    this.ctx.imageSmoothingEnabled= false
+    this.ctx.imageSmoothingEnabled = false;
 
     // Global color
     this.globalColor = getColorString(255, 255, 255);
@@ -176,7 +176,7 @@ Graphics.prototype.drawScaledBitmapRegion = function (bmp, sx, sy, sw, sh, dx, d
         dy *= -1;
     }
 
-    c.drawImage(bmp, sx | 0, sy | 0, sw, sh, dx | 0, dy | 0, dw, dh);
+    c.drawImage(bmp, sx | 0, sy | 0, sw, sh, dx | 0, dy | 0, dw | 0, dh | 0);
 
     // ... and restore the old
     if (flip != Flip.None) {
