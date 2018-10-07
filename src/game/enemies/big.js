@@ -22,7 +22,7 @@ BigSlime.prototype = Object.create(Enemy.prototype);
 
 
 // On update
-BigSlime.prototype.onUpdate = function(pl, tm) {
+BigSlime.prototype.onUpdate = function(pl, audio, a, tm) {
 
     // ...
 }

@@ -18,7 +18,7 @@ PassiveSlime.prototype = Object.create(Enemy.prototype);
 
 
 // On update
-PassiveSlime.prototype.onUpdate = function(pl, tm) {
+PassiveSlime.prototype.onUpdate = function(pl, audio, a, tm) {
 
     // ...
 }

@@ -52,8 +52,8 @@ Menu.prototype.update = function(vpad, audio, a) {
     if (vpad.buttons.confirm == State.Pressed
         || vpad.buttons.fire1 == State.Pressed) {
    
-         audio.playSample(a.audio.select, 0.6);
         this.cb(this.cursor, this.params);
+        audio.playSample(a.audio.select, 0.70);
     }
 }
 

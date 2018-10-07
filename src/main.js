@@ -42,6 +42,13 @@ let assetInfo = {
         start: "start.wav",
         ready: "ready.wav",
         go: "go.wav",
+        pause: "pause.wav",
+        jump: "jump.wav",
+        roll: "roll.wav",
+        hurt: "hurt.wav",
+        fuel: "fuel.wav",
+        gem: "gem.wav",
+        heal: "heal.wav",
     },
 };
 

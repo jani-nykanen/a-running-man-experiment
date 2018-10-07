@@ -26,6 +26,8 @@ Audio.prototype.toggle = function(state) {
 // Play a sample
 Audio.prototype.playSample = function(sound, vol) {
 
+    if(!this.enabled) return;
+
     vol *= this.sampleVol;
 
     if(!sound.playID) {

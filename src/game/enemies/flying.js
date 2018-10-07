@@ -41,7 +41,7 @@ FlyingSlime.prototype.onCreate = function() {
 
 
 // On update
-FlyingSlime.prototype.onUpdate = function(pl, tm) {
+FlyingSlime.prototype.onUpdate = function(pl, audio, a, tm) {
 
     const WAVE_SPEED = 0.05;
     const AMPLITUDE = 0.1;

@@ -128,12 +128,12 @@ EnemyGen.prototype.updateTimer = function(x, z, w, phase) {
 
 
 // Update
-EnemyGen.prototype.update = function(pl, near, tm) {
+EnemyGen.prototype.update = function(pl, near, audio, a, tm) {
     
     // Update enemies
     for(let i = 0; i < this.enemies.length; ++ i) {
 
-        this.enemies[i].update(pl, near, tm);
+        this.enemies[i].update(pl, near, audio, a, tm);
     }
 }
 

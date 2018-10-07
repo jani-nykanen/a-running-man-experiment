@@ -93,6 +93,7 @@ Pause.prototype.update = function (vpad, audio, a) {
     // Cancel
     if(vpad.buttons.cancel == State.Pressed) {
 
+        audio.playSample(a.audio.cancel, 0.60);
         this.active = false;
         return;
     }

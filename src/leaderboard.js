@@ -155,7 +155,7 @@ Leaderboard.prototype.update = function(tm) {
     // Check confirm key pressing
     if(this.vpad.buttons.confirm == State.Pressed) {
 
-        this.audio.playSample(this.assets.audio.select, 0.60);
+        this.audio.playSample(this.assets.audio.select, 0.70);
 
         // Return
         let s = this.returnScene;

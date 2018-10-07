@@ -83,7 +83,7 @@ Title.prototype.update = function(tm) {
          // Confirm pressed
         if(this.vpad.buttons.confirm == State.Pressed) {
 
-            this.audio.playSample(this.assets.audio.start, 0.60);
+            this.audio.playSample(this.assets.audio.start, 0.50);
             ++ this.phase;
         }
     }

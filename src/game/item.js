@@ -48,7 +48,7 @@ Item.prototype.createSelf = function (x, y, z, id) {
 
 
 // Player collision
-Item.prototype.playerCollision = function (pl) {
+Item.prototype.playerCollision = function (pl, audio, a) {
 
     const PL_WIDTH = 0.0;
     const DEPTH = 0.2;
@@ -66,33 +66,44 @@ Item.prototype.playerCollision = function (pl) {
         this.dying = true;
         this.deathTimer = this.maxDeathTime;
 
+        let track = null;
+        let vol = 0.0;
+
         // Effect
         switch(this.id) {
 
         // Gem
         case 0:
             pl.boost();
+            track = a.audio.gem;
+            vol = 0.60;
             break;
 
         // Heart
         case 1:
             pl.addLife();
+            track = a.audio.heal;
+            vol = 1.00;
             break;
 
         // Fuel
         case 2:
             pl.addFuel(FUEL_UP);
+            track = a.audio.fuel;
+            vol = 0.60;
             break;
 
         default: 
             break;
         }
+    
+        audio.playSample(track, vol);
     }
 }
 
 
 // Update
-Item.prototype.update = function (pl, near, tm) {
+Item.prototype.update = function (pl, near, audio, a, tm) {
 
     const WAVE_SPEED = 0.1;
 
@@ -132,7 +143,7 @@ Item.prototype.update = function (pl, near, tm) {
     this.wave += WAVE_SPEED * tm;
 
     // Player collision
-    this.playerCollision(pl);
+    this.playerCollision(pl, audio, a);
 }
 
 

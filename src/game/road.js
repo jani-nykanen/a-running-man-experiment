@@ -231,16 +231,16 @@ Road.prototype.updateDecGenerator = function(z) {
 
 
 // Update
-Road.prototype.update = function (pl, checkpoint, tm) {
+Road.prototype.update = function (pl, checkpoint, audio, a, tm) {
 
     const CURVATURE_FACTOR = 0.2;
     const NEAR = 0.5;
     const CORRECTION = 0.2;
 
     // Update items
-    this.items.update(pl, NEAR, tm);
+    this.items.update(pl, NEAR, audio, a, tm);
     // Update enemies
-    this.enemies.update(pl, NEAR, tm);
+    this.enemies.update(pl, NEAR, audio, a, tm);
 
     // Update decorations
     for(let i = 0; i < this.decorations.length; ++ i) {

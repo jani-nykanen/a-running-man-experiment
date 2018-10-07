@@ -77,15 +77,16 @@ Game.prototype.update = function (tm) {
         && this.vpad.buttons.confirm == State.Pressed) {
 
         this.pause.active = true;
+        this.audio.playSample(this.assets.audio.pause, 0.80);
         return;
     }
 
     // Update player & camera (if not start timer active)
     if(this.hud.startTimer <= 60.0)
-        this.camX = this.player.update(this.vpad, this.camX, tm);
+        this.camX = this.player.update(this.vpad, this.camX, this.audio, this.assets, tm);
 
     // Update road
-    this.road.update(this.player, this.checkpoint, tm);
+    this.road.update(this.player, this.checkpoint, this.audio, this.assets, tm);
 
     // Update background
     this.bg.update(this.player.speed.z, tm);
@@ -94,17 +95,11 @@ Game.prototype.update = function (tm) {
     this.checkpoint.update(this.player, this.hud, NEAR, FAR, tm);
 
     // Update HUD
-    if(!this.global.trans.active)
+    if(!this.global.trans.active) {
+
         this.hud.update(this.player, this.checkpoint, this.gover, 
             this.audio, this.assets, tm);
-
-    // TEMP
-    /*
-    if(this.vpad.buttons.test == State.Pressed) {
-
-        this.gover.activate(this.hud);
     }
-    */
 }
 
 

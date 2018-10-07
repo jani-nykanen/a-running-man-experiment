@@ -23,7 +23,7 @@ JumpingSlime.prototype = Object.create(Enemy.prototype);
 
 
 // On update
-JumpingSlime.prototype.onUpdate = function(pl, tm) {
+JumpingSlime.prototype.onUpdate = function(pl, audio, a, tm) {
 
     const GRAVITY = 0.025;
     const JUMP_MIN = 0.050;

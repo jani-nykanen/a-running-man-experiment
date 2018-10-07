@@ -70,6 +70,9 @@ var Player = function (z) {
     this.spr = new Sprite(24, 24);
     this.spr.row = 8;
     this.spr.frame = 5;
+
+    // Hurt played
+    this.hurtPlayed = false;
 }
 
 
@@ -98,7 +101,7 @@ Player.prototype.updateSpeed = function (speed, target, acc, tm) {
 
 
 // Control
-Player.prototype.control = function (vpad, tm) {
+Player.prototype.control = function (vpad, audio, a, tm) {
 
     const BRAKE_FACTOR = 0.0025;
     const DELTA = 0.05;
@@ -180,6 +183,8 @@ Player.prototype.control = function (vpad, tm) {
                 this.fuel -= JUMP_FUEL;
             }
 
+            audio.playSample(a.audio.jump, 0.60);
+
             this.speed.y = -height;
         }
         // Double jump
@@ -189,6 +194,8 @@ Player.prototype.control = function (vpad, tm) {
             this.doubleJump = true;
 
             this.fuel -= DJUMP_FUEL;
+
+            audio.playSample(a.audio.jump, 0.60);
         }
     }
     else if (this.speed.y < 0.0 && !this.canJump && f1 == State.Released) {
@@ -207,6 +214,8 @@ Player.prototype.control = function (vpad, tm) {
         this.speed.z *= ROLL_BONUS;
 
         this.fuel -= ROLL_FUEL;
+
+        audio.playSample(a.audio.roll, 0.70);
     }
     else if (this.rolling && this.rollTimer > 0.0 && f2 == State.Released) {
 
@@ -391,7 +400,7 @@ Player.prototype.updateCamera = function (cam, tm) {
 
 
 // Update
-Player.prototype.update = function (vpad, camX, tm) {
+Player.prototype.update = function (vpad, camX, audio, a, tm) {
 
     if(this.dying) {
 
@@ -422,6 +431,17 @@ Player.prototype.update = function (vpad, camX, tm) {
         if(this.hurtTimer > 0.0) {
 
             this.hurtTimer -= 1.0 * tm;
+        
+            // Play hurt
+            if(!this.hurtPlayed) {
+
+                audio.playSample(a.audio.hurt, 0.60);
+                this.hurtPlayed = true;
+            }
+        }
+        else {
+
+            this.hurtPlayed = false;
         }
 
         // Update heal timer
@@ -431,7 +451,7 @@ Player.prototype.update = function (vpad, camX, tm) {
         }
 
         // Control
-        this.control(vpad, tm);
+        this.control(vpad, audio, a, tm);
 
     }
 

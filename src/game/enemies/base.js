@@ -81,7 +81,7 @@ Enemy.prototype.updateSpeed = function (speed, target, acc, tm) {
 
 
 // Update
-Enemy.prototype.update = function(pl, near, tm) {
+Enemy.prototype.update = function(pl, near, audio, a, tm) {
 
     if(!this.exist) return;
 
@@ -108,7 +108,7 @@ Enemy.prototype.update = function(pl, near, tm) {
     // Call custom update function
     if(this.onUpdate != null) {
 
-        this.onUpdate(pl, tm);
+        this.onUpdate(pl, audio, a, tm);
     }
 
     // Call custom animation function

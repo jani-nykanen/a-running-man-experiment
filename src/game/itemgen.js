@@ -115,12 +115,12 @@ ItemGen.prototype.updateTimer = function(x, z, w, pl) {
 
 
 // Update
-ItemGen.prototype.update = function(pl, near, tm) {
+ItemGen.prototype.update = function(pl, near, audio, a, tm) {
 
     // Update items
     for(let i = 0; i < this.items.length; ++ i) {
 
-        this.items[i].update(pl, near, tm);
+        this.items[i].update(pl, near, audio, a, tm);
     }
 }
 

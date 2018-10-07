@@ -33,7 +33,7 @@ FollowingSlime.prototype = Object.create(Enemy.prototype);
 
 
 // On update
-FollowingSlime.prototype.onUpdate = function(pl, tm) {
+FollowingSlime.prototype.onUpdate = function(pl, audio, a, tm) {
 
     const WAVE_SPEED = 0.05;
     const AMPLITUDE = 0.30;
