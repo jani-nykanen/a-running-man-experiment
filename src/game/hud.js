@@ -149,6 +149,13 @@ HUD.prototype.update = function (pl, checkpoint, gover, audio, a, tm) {
         if(old != n) {
 
             audio.playSample(n == 0 ? a.audio.go : a.audio.ready, 0.60);
+
+            // Start music with "GO"
+            if(n == 0) {
+
+                audio.stopMusic();
+                audio.fadeInMusic(a.audio.theme, 0.60, 1000.0);
+            }
         }
 
         return;

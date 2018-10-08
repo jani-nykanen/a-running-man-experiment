@@ -51,6 +51,8 @@ let assetInfo = {
         gem: "gem.wav",
         heal: "heal.wav",
         loser: "loser.wav",
+        theme: "theme.ogg",
+        menu: "menu.ogg",
     },
 };
 

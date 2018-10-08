@@ -5,20 +5,22 @@
  */
 
 // Global contants
-let Intro_FLICKER_MAX = 60.0;
+let INTRO_FLICKER_MAX = 60.0;
+let INTRO_TIME = 120.0;
 
 
 // Constructor
 var Intro = function(app) {
     
-    const TIME = 120.0;
-
     Scene.call(this,[app, "intro"]);
 
-    this.timer = TIME;
+    this.timer = INTRO_TIME;
 
     // Set fading
     this.global.trans.activate(1.0, Mode.Out, null);
+
+    // Phase
+    this.phase = 0.0;
 }
 Intro.prototype = Object.create(Scene.prototype);
 
@@ -33,10 +35,20 @@ Intro.prototype.update = function(tm) {
     this.timer -= 1.0 * tm;
     if(this.timer <= 0.0 || this.vpad.input.anyKeyPressed) {
         
-        trans.activate(2.0, Mode.In, function() {
+        if(this.phase == 0) {
 
-            appRef.changeScene("title");
-        });
+            trans.activate(2.0, Mode.In, function() {
+
+                appRef.changeScene("intro");
+            });
+        }
+        else {
+
+            trans.activate(2.0, Mode.In, function() {
+
+                appRef.changeScene("title");
+            });
+        }
     }
     
 }
@@ -48,5 +60,14 @@ Intro.prototype.draw = function(g) {
     g.clearScreen(0, 0, 0);
 
     // Draw "game by" text
-    g.drawBitmap(this.assets.bitmaps.creator, 0, 0, 0);
+    g.drawBitmapRegion(this.assets.bitmaps.creator, 
+        this.phase*128, 0, 128, 128, 0, 0, 0);
+}
+
+
+// On change
+Intro.prototype.onChange = function() {
+
+    ++ this.phase;
+    this.timer = INTRO_TIME;
 }

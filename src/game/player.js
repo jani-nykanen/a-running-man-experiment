@@ -411,6 +411,9 @@ Player.prototype.update = function (vpad, camX, audio, a, tm) {
 
             audio.playSample(a.audio.loser, 0.60);
             this.deathPlayed = true;
+
+            // Stop music
+            audio.fadeOutMusic(a.audio.theme, 0.60, 1000.0);
         }
 
         this.flashTimer = 0.0;

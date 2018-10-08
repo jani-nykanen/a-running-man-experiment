@@ -41,6 +41,11 @@ Title.prototype.confirmEvent = function(cursor, t) {
 
     // Play
     case 0:
+
+        // Fade out music
+        this.audio.fadeOutMusic(this.assets.audio.menu, 0.60, 1000.0);
+
+        // Fade to the game scene
         t.global.trans.activate(2.0, Mode.In, function() {
 
             t.app.changeScene("game");
@@ -124,5 +129,16 @@ Title.prototype.draw = function(g) {
         this.menu.draw(g, this.assets, 16, 64, 14, 
             this.global.trans.active && this.global.trans.mode == Mode.In,
             this.global.trans.timer);
+    }
+}
+
+
+// On change
+Title.prototype.onChange = function(scene) {
+
+    if(scene != this.app.scenes.leaderboard) {
+        
+        this.audio.stopMusic();
+        this.audio.fadeInMusic(this.assets.audio.menu, 0.60, 1000.0);
     }
 }
