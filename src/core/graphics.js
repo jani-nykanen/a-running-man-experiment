@@ -146,6 +146,8 @@ Graphics.prototype.drawBitmapRegion = function (bmp, sx, sy, sw, sh, dx, dy, fli
 // Draw a scaled bitmap region
 Graphics.prototype.drawScaledBitmapRegion = function (bmp, sx, sy, sw, sh, dx, dy, dw, dh, flip) {
 
+    if(dw <= 0 || dh <= 0) return;
+
     sw = sw | 0;
     sh = sh | 0;
 
