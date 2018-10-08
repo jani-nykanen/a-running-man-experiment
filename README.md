@@ -1,5 +1,5 @@
-![](https://cdn.discordapp.com/attachments/285797060169433091/497473075600818176/unknown.png)
+![](https://cdn.discordapp.com/attachments/272096693292498944/498926212224253954/unknown.png)
 
-It will blow your mind and possibly something else, too. (The picture above is outdated, note that)
+[Play on itch.io](https://jani-nykanen.itch.io/a-running-man-experiment)
 
 (c) 2018 Jani Nykänen

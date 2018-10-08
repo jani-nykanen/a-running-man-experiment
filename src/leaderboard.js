@@ -5,9 +5,11 @@
  */
 
 // Global key
+// I really should hide this one day I think...
 if(typeof(GLOBAL_KEY) == "undefined") {
 
-    GLOBAL_KEY = "tmpkey123";
+    console.log("PLEASE CHANGE THE GLOBAL KEY TO GET LEADERBOARD WORKING!");
+    GLOBAL_KEY = "null";
 }
 
 
