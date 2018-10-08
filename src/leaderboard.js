@@ -5,7 +5,10 @@
  */
 
 // Global key
-let GLOBAL_KEY = "tmpkey123";
+if(typeof(GLOBAL_KEY) == "undefined") {
+
+    GLOBAL_KEY = "tmpkey123";
+}
 
 
 // Score entry constructor

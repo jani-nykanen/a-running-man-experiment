@@ -35,10 +35,19 @@ var Item = function () {
 // Create
 Item.prototype.createSelf = function (x, y, z, id) {
 
+    const FUEL_MUL = 1.33;
+
     this.pos.x = x;
     this.pos.y = y;
     this.pos.z = z;
     this.id = id;
+
+    // Size for fuel
+    if(this.id == 2) {
+
+        this.w *= FUEL_MUL;
+        this.h *= FUEL_MUL;
+    }
 
     this.spr.row = this.id;
 

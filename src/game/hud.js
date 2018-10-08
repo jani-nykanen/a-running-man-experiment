@@ -148,7 +148,7 @@ HUD.prototype.update = function (pl, checkpoint, gover, audio, a, tm) {
         // Play beep if changed
         if(old != n) {
 
-            audio.playSample(n == 0 ? a.audio.go : a.audio.ready, 0.60);
+            audio.playSample(n == 0 ? a.audio.go : a.audio.ready, 0.75);
 
             // Start music with "GO"
             if(n == 0) {
