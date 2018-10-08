@@ -19,6 +19,10 @@ var Item = function () {
     this.w = DEFAULT_SIZE;
     this.h = DEFAULT_SIZE;
 
+    // Render size
+    this.rw = DEFAULT_SIZE;
+    this.rh = DEFAULT_SIZE;
+
     // Sprite
     this.spr = new Sprite(24, 24);
 
@@ -35,7 +39,8 @@ var Item = function () {
 // Create
 Item.prototype.createSelf = function (x, y, z, id) {
 
-    const FUEL_MUL = 1.33;
+    const DEFAULT_SIZE = 0.4;
+    const FUEL_MUL = 1.20;
 
     this.pos.x = x;
     this.pos.y = y;
@@ -45,8 +50,13 @@ Item.prototype.createSelf = function (x, y, z, id) {
     // Size for fuel
     if(this.id == 2) {
 
-        this.w *= FUEL_MUL;
-        this.h *= FUEL_MUL;
+        this.w = DEFAULT_SIZE* FUEL_MUL;
+        this.h = DEFAULT_SIZE*FUEL_MUL;
+    }
+    else {
+
+        this.w = DEFAULT_SIZE;
+        this.h = DEFAULT_SIZE;
     }
 
     this.spr.row = this.id;
@@ -185,8 +195,8 @@ Item.prototype.draw = function (g, a) {
     // Draw sprite
     this.spr.draw3D(g, a.bitmaps.items, this.pos.x,
         this.pos.y + Math.sin(this.wave) * AMPLITUDE,
-        this.pos.z - this.h * (scale-1),
-        this.w*scale, this.h*scale,
+        this.pos.z - this.rh * (scale-1),
+        this.rw*scale, this.rh*scale,
         12,
         Flip.None,
         !this.dying);
